@@ -31,16 +31,38 @@ def create_range(l):
     yield '.'.join(first) + '-' + last[3]
 
 
-def get_ranged_ipadds(ipaddrs_list):
-    ipaddrs = load_ipaddrs(path=ipaddrs_list)
+def get_ranged_ipadds(ipaddrs):
     ipaddrs = sorted(ipaddrs)
     for ip_group in group_ipaddrs(ipaddrs=ipaddrs, cidr=3):
         for range in create_range(ip_group):
-            print(range)
+            yield range
+
+
+def len_list(list):
+    max = 0
+    for i in list:
+        max += len(i)
+
+    return max
+
+
+def seperate_list(ipaddrs, max_len):
+    list = []
+    for range in ipaddrs:
+        if (len_list(list) + len(range)) <= max_len:
+            list.append(range)
+        else:
+            yield list
+            list = []
+
 
 
 def main():
-    get_ranged_ipadds('hosts')
+    ipaddrs = load_ipaddrs(path='eai')
+    ipranges = [range for range in get_ranged_ipadds(ipaddrs=ipaddrs)]
+    for list in seperate_list(ipaddrs=ipranges, max_len=200):
+        print(list)
+    #print(ipranges)
 
 
 if __name__ == '__main__':
