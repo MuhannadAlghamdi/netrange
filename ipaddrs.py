@@ -56,13 +56,11 @@ def seperate_list(ipaddrs, max_len):
             list = []
 
 
-
 def main():
     ipaddrs = load_ipaddrs(path='eai')
     ipranges = [range for range in get_ranged_ipadds(ipaddrs=ipaddrs)]
     for list in seperate_list(ipaddrs=ipranges, max_len=200):
-        print(list)
-    #print(ipranges)
+        print(','.join(list))
 
 
 if __name__ == '__main__':
