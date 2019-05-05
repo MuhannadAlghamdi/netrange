@@ -1,4 +1,5 @@
 import re
+import argparse
 
 
 def load_ipaddrs(path):
@@ -45,11 +46,11 @@ def range_ipaddrs(ipaddrs):
 def separate_list(ipaddrs, max_len):
     list = []
     for range in ipaddrs:
-        if (len_list(list) + len(range)) <= max_len:
+        if (len_list(list) + len(range) + len(list)) <= max_len:
             list.append(range)
         else:
             yield list
-            list = []
+            list = [range]
     yield list
 
 
@@ -68,14 +69,17 @@ def get_ranged_ipadds(ipaddrs):
             yield ranged_ipaddrs
 
 
-def main():
-    ipaddrs = load_ipaddrs(path='eai')
+def main(args):
+    ipaddrs = load_ipaddrs(path=args.file)
     ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
-    separated_ipaddrs_gen = separate_list(ipaddrs=ranged_ipaddrs_gen, max_len=350)
+    separated_ipaddrs_gen = separate_list(ipaddrs=ranged_ipaddrs_gen, max_len=99)
 
     for range in separated_ipaddrs_gen:
         print(','.join(range))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file')
+    args = parser.parse_args()
+    main(args=args)
