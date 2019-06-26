@@ -5,8 +5,13 @@ import sys
 import argparse
 
 
-def load_ipaddrs_from_args(args):
-    contents = "\n".join(args)
+def load_ipaddrs(from_args=None, from_file=None):
+    if from_args:
+        contents = "\n".join(from_args)
+    elif from_file:
+        with open(from_file, 'r') as f:
+            contents = f.read()
+
     regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
@@ -15,19 +20,6 @@ def load_ipaddrs_from_args(args):
     ipaddrs = re.findall(pattern=regex, string=contents)
     print(f'loaded {len(ipaddrs)} ip addresses')
     return ipaddrs
-
-
-def load_ipaddrs_from_file(path):
-    with open(path, 'r') as f:
-        contents = f.read()
-        regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-                r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-                r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-                r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-
-        ipaddrs = re.findall(pattern=regex, string=contents)
-        print(f'loaded {len(ipaddrs)} ip addresses')
-        return ipaddrs
 
 
 def group_ipaddrs(ipaddrs, octet):
@@ -86,9 +78,9 @@ def get_ranged_ipadds(ipaddrs):
 
 def main(args):
     if args.file:
-        ipaddrs = load_ipaddrs_from_file(path=args.file)
+        ipaddrs = load_ipaddrs(from_file=args.file)
     elif args.args:
-        ipaddrs = load_ipaddrs_from_args(args=args.args)
+        ipaddrs = load_ipaddrs(from_args=args.args)
 
     ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
     separated_ipaddrs_gen = separate_list(ipaddrs=ranged_ipaddrs_gen, max_len=args.max)
