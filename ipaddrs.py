@@ -1,8 +1,23 @@
+#!/usr/bin/env python3
+
 import re
+import sys
 import argparse
 
 
-def load_ipaddrs(path):
+def load_ipaddrs_from_args(args):
+    contents = "\n".join(args)
+    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+    ipaddrs = re.findall(pattern=regex, string=contents)
+    print(f'loaded {len(ipaddrs)} ip addresses')
+    return ipaddrs
+
+
+def load_ipaddrs_from_file(path):
     with open(path, 'r') as f:
         contents = f.read()
         regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
@@ -70,9 +85,13 @@ def get_ranged_ipadds(ipaddrs):
 
 
 def main(args):
-    ipaddrs = load_ipaddrs(path=args.file)
+    if args.file:
+        ipaddrs = load_ipaddrs_from_file(path=args.file)
+    elif args.args:
+        ipaddrs = load_ipaddrs_from_args(args=args.args)
+
     ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
-    separated_ipaddrs_gen = separate_list(ipaddrs=ranged_ipaddrs_gen, max_len=99)
+    separated_ipaddrs_gen = separate_list(ipaddrs=ranged_ipaddrs_gen, max_len=args.max)
 
     for range in separated_ipaddrs_gen:
         print(','.join(range))
@@ -80,6 +99,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('args', nargs='+')
     parser.add_argument('--file')
+    parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
     args = parser.parse_args()
     main(args=args)
