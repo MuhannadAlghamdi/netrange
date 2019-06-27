@@ -98,6 +98,7 @@ def len_list(list):
 
 def get_ranged_ports(ports):
     unduplicated_ports = list(set(ports))
+    print(f'found {len(ports) - len(unduplicated_ports)} duplicated ports')
     sorted_ports = sorted(unduplicated_ports, key=int)
     for ranged_ports in range_ports(ports=sorted_ports):
         yield ranged_ports
@@ -105,6 +106,7 @@ def get_ranged_ports(ports):
 
 def get_ranged_ipadds(ipaddrs):
     unduplicated_ipaddrs = list(set(ipaddrs))
+    print(f'found {len(ipaddrs) - len(unduplicated_ipaddrs)} duplicated ip addresses')
     sorted_ipaddrs = sorted(unduplicated_ipaddrs)
     for grouped_ipaddrs in group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
         for ranged_ipaddrs in range_ipaddrs(ipaddrs=grouped_ipaddrs):
