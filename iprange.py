@@ -97,14 +97,16 @@ def len_list(list):
 
 
 def get_ranged_ports(ports):
-    sorted_ports = sorted(ports, key=int)
+    unduplicated_ports = list(set(ports))
+    sorted_ports = sorted(unduplicated_ports, key=int)
     for ranged_ports in range_ports(ports=sorted_ports):
         yield ranged_ports
 
 
 def get_ranged_ipadds(ipaddrs):
-    ipaddrs = sorted(ipaddrs)
-    for grouped_ipaddrs in group_ipaddrs(ipaddrs=ipaddrs, octet=3):
+    unduplicated_ipaddrs = list(set(ipaddrs))
+    sorted_ipaddrs = sorted(unduplicated_ipaddrs)
+    for grouped_ipaddrs in group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
         for ranged_ipaddrs in range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs
 
