@@ -113,25 +113,36 @@ def get_ranged_ipadds(ipaddrs):
             yield ranged_ipaddrs
 
 
-def main(args):
-    if args.ip:
-        ipaddrs = load_ipaddrs(from_file=args.ip)
-        ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
-        separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=args.max)
-        for range in separated_ipaddrs_gen:
-            print(','.join(range))
+def print_ranged_ipaddrs(ipaddrs):
+    ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
+    separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=args.max)
+    for range in separated_ipaddrs_gen:
+        print(','.join(range))
 
+
+def print_ranged_ports(ports):
+    ranged_ports_gen = get_ranged_ports(ports=ports)
+    separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=args.max)
+    for range in separated_ports_gen:
+        print(','.join(range))
+
+
+def main(args):
+    if args.nargs:
+        ipaddrs = load_ipaddrs(from_args=args.nargs)
+        print_ranged_ipaddrs(ipaddrs=ipaddrs)
+    elif args.file:
+        ipaddrs = load_ipaddrs(from_file=args.file)
+        print_ranged_ipaddrs(ipaddrs=ipaddrs)
     elif args.port:
         ports = load_ports(from_file=args.port)
-        ranged_ports_gen = get_ranged_ports(ports=ports)
-        separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=args.max)
-        for range in separated_ports_gen:
-            print(','.join(range))
+        print_ranged_ports(ports=ports)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ip')
+    parser.add_argument('nargs', nargs='*')
+    parser.add_argument('--file')
     parser.add_argument('--port')
     parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
     args = parser.parse_args()
