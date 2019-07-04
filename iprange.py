@@ -4,9 +4,12 @@ import re
 import argparse
 
 
-def load_ports(from_file):
-    with open(from_file, 'r') as f:
-        contents = f.read()
+def load_ports(from_args=None, from_file=None):
+    if from_args:
+        contents = "\n".join(from_args)
+    elif from_file:
+        with open(from_file, 'r') as f:
+            contents = f.read()
 
     regex = r'\b([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]?)\b'
 
@@ -113,37 +116,51 @@ def get_ranged_ipadds(ipaddrs):
             yield ranged_ipaddrs
 
 
-def print_ranged_ipaddrs(ipaddrs):
+def print_ranged_ipaddrs(ipaddrs, max_len):
     ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
-    separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=args.max)
+    separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=max_len)
     for range in separated_ipaddrs_gen:
         print(','.join(range))
 
 
-def print_ranged_ports(ports):
+def print_ranged_ports(ports, max_len):
     ranged_ports_gen = get_ranged_ports(ports=ports)
-    separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=args.max)
+    separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=max_len)
     for range in separated_ports_gen:
         print(','.join(range))
 
 
 def main(args):
-    if args.nargs:
-        ipaddrs = load_ipaddrs(from_args=args.nargs)
-        print_ranged_ipaddrs(ipaddrs=ipaddrs)
-    elif args.file:
-        ipaddrs = load_ipaddrs(from_file=args.file)
-        print_ranged_ipaddrs(ipaddrs=ipaddrs)
-    elif args.port:
-        ports = load_ports(from_file=args.port)
-        print_ranged_ports(ports=ports)
+    if args.options == 'ip':
+        if args.args:
+            ipaddrs = load_ipaddrs(from_args=args.args)
+            print_ranged_ipaddrs(ipaddrs=ipaddrs, max_len=args.max)
+        elif args.file:
+            ipaddrs = load_ipaddrs(from_file=args.file)
+            print_ranged_ipaddrs(ipaddrs=ipaddrs, max_len=args.max)
+    elif args.options == 'port':
+        if args.args:
+            ports = load_ports(from_args=args.args)
+            print_ranged_ports(ports=ports, max_len=args.max)
+        elif args.file:
+            ports = load_ports(from_file=args.file)
+            print_ranged_ports(ports=ports, max_len=args.max)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('nargs', nargs='*')
-    parser.add_argument('--file')
-    parser.add_argument('--port')
-    parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
+    parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
+    subparser = parser.add_subparsers(dest='options', help='choose script action')
+
+    ip_parser = subparser.add_parser('ip', help='ip options')
+    ip_parser.add_argument('args', nargs='*')
+    ip_parser.add_argument('-f', '--file')
+    ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
+
+    port_parser = subparser.add_parser('port', help='port options')
+    port_parser.add_argument('args', nargs='*')
+    port_parser.add_argument('-f', '--file')
+    port_parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
+
     args = parser.parse_args()
-    main(args=args)
+
+    main(args)
