@@ -115,57 +115,55 @@ def get_ranged_ipadds(ipaddrs):
     duplicated_ipaddrs = len(ipaddrs) - len(unduplicated_ipaddrs)
     if duplicated_ipaddrs > 0:
         print(f'found {duplicated_ipaddrs} duplicated ip addresses')
-        
+
     sorted_ipaddrs = sorted(unduplicated_ipaddrs)
     for grouped_ipaddrs in group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
         for ranged_ipaddrs in range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs
 
 
-def print_ranged_ipaddrs(ipaddrs, max_len):
+def range_ipaddrs(ipaddrs, max_len):
     ranged_ipaddrs_gen = get_ranged_ipadds(ipaddrs=ipaddrs)
-    separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=max_len)
-    for range in separated_ipaddrs_gen:
-        print(','.join(range))
+    if max_len is not None:
+        separated_ipaddrs_gen = separate_list(from_list=ranged_ipaddrs_gen, max_len=max_len)
+        return separated_ipaddrs_gen
+    return ranged_ipaddrs_gen
 
 
-def print_ranged_ports(ports, max_len):
+def range_ports(ports, max_len):
     ranged_ports_gen = get_ranged_ports(ports=ports)
-    separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=max_len)
-    for range in separated_ports_gen:
-        print(','.join(range))
+    if max_len is not None:
+        separated_ports_gen = separate_list(from_list=ranged_ports_gen, max_len=max_len)
+        return separated_ports_gen
+    return separated_ports_gen
 
 
 def main(args):
     if args.options == 'ip':
-        if args.args:
-            ips = load_ipaddrs(from_args=args.args)
-            print_ranged_ipaddrs(ipaddrs=ips, max_len=args.max)
-        elif args.file:
-            ips = load_ipaddrs(from_file=args.file)
-            print_ranged_ipaddrs(ipaddrs=ips, max_len=args.max)
+        ips = load_ipaddrs(from_args=args.args, from_file=args.file)
+        post_range = ranged_ipaddrs(ipaddrs=ips, max_len=args.max)
+        print([range for range in post_range])
     elif args.options == 'port':
-        if args.args:
-            ports = load_ports(from_args=args.args)
-            print_ranged_ports(ports=ports, max_len=args.max)
-        elif args.file:
-            ports = load_ports(from_file=args.file)
-            print_ranged_ports(ports=ports, max_len=args.max)
+        ports = load_ports(from_args=args.args, from_file=args.file)
+        ranged_ports = range_ports(ports=ports, max_len=args.max)
+        print([range for range in ranged_ports])
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
-    subparser = parser.add_subparsers(dest='options', help='choose script action')
+    subparser = parser.add_subparsers(dest='options', help='choose script action', required=True)
 
     ip_parser = subparser.add_parser('ip', help='ip options')
-    ip_parser.add_argument('args', nargs='*')
-    ip_parser.add_argument('-f', '--file')
-    ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
+    group = ip_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--args', nargs='+')
+    group.add_argument('--file', type=argparse.FileType('r'))
+    ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
 
     port_parser = subparser.add_parser('port', help='port options')
-    port_parser.add_argument('args', nargs='*')
-    port_parser.add_argument('-f', '--file')
-    port_parser.add_argument('--max', nargs='?', const=1, type=int, default=99)
+    group = port_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--args', nargs='+')
+    group.add_argument('--file', type=argparse.FileType('r'))
+    port_parser.add_argument('--max', nargs='?', type=int, default=None)
 
     args = parser.parse_args()
 
