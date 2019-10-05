@@ -1,9 +1,10 @@
 import argparse
-import iprange
+from iprange import IPRange
 
 
 def main():
     parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
+    parser.add_argument('--verbose', action='store_true')
     subparser = parser.add_subparsers(dest='options', help='choose script action', required=True)
 
     ip_parser = subparser.add_parser('ip', help='ip options')
@@ -21,11 +22,13 @@ def main():
     args = parser.parse_args()
 
     if args.options == 'ip':
-        ips = iprange.load_ipaddrs(from_args=args.args, from_file=args.file)
-        post_range = iprange.ranged_ipaddrs(ipaddrs=ips, max_len=args.max)
-        print([range for range in post_range])
+        iprange = IPRange(from_args=args.args, from_file=args.file, verbose=args.verbose)
+        ips = iprange.load_ipaddrs()
+        ranged_ips = iprange.ranged_ipaddrs(ipaddrs=ips, max_len=args.max)
+        print([range for range in ranged_ips])
     elif args.options == 'port':
-        ports = iprange.load_ports(from_args=args.args, from_file=args.file)
+        iprange = IPRange(from_args=args.args, from_file=args.file, verbose=args.verbose)
+        ports = iprange.load_ports()
         ranged_ports = iprange.ranged_ports(ports=ports, max_len=args.max)
         print([range for range in ranged_ports])
 
