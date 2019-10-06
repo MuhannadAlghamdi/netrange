@@ -1,8 +1,8 @@
 from setuptools import setup
 
 
-setup(name='iprange-',
-      version='0.0.4',
+setup(name='netrange',
+      version='0.0.5',
       description='Script to range multiple IPs and ports',
       url='https://github.com/muhannadengineer/iprange',
       author='Muhannad Alghamdi',
