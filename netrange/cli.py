@@ -31,7 +31,7 @@ def main():
         print(ranged_ipaddrs)
     elif args.options == 'port':
         ports = load_ports(from_args=args.args, from_file=args.file, verbose=args.verbose)
-        ranged_ports = dumps_ports(ports=ports, max_len=args.max)
+        ranged_ports = dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
         print(ranged_ports)
 
 if __name__ == "__main__":
