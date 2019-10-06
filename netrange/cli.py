@@ -10,13 +10,13 @@ def dispatch(argv):
     ip_parser = subparser.add_parser('ip', help='ip options')
     group = ip_parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--args', nargs='+')
-    group.add_argument('--file', type=argparse.FileType('r'))
+    group.add_argument('--file')
     ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
 
     port_parser = subparser.add_parser('port', help='port options')
     group = port_parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--args', nargs='+')
-    group.add_argument('--file', type=argparse.FileType('r'))
+    group.add_argument('--file')
     port_parser.add_argument('--max', nargs='?', type=int, default=None)
 
     args = parser.parse_args(argv)
