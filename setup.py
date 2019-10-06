@@ -8,10 +8,10 @@ setup(name='netrange',
       author='Muhannad Alghamdi',
       author_email='muhannadengineer@gmail.com',
       license='MIT',
-      packages=['iprange'],
+      packages=['netrange'],
       entry_points={
           'console_scripts': [
-              'iprange = iprange.cli:main'
+              'netrange = netrange.cli:main'
           ]
       },
       keywords='ip address port range')

@@ -1,9 +1,9 @@
 import argparse
 
-from iprange import load_ipaddrs
-from iprange import load_ports
-from iprange import dumps_ipaddrs
-from iprange import dumps_ports
+from netrange import load_ipaddrs
+from netrange import load_ports
+from netrange import dumps_ipaddrs
+from netrange import dumps_ports
 
 
 def main():
@@ -30,11 +30,9 @@ def main():
         ranged_ipaddrs = dumps_ipaddrs(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
         print(ranged_ipaddrs)
     elif args.options == 'port':
-        iprange = IPRange(from_args=args.args, from_file=args.file, verbose=args.verbose)
-        ports = load_ports()
-        ranged_ports = ranged_ports(ports=ports, max_len=args.max)
-        print([range for range in ranged_ports])
-
+        ports = load_ports(from_args=args.args, from_file=args.file, verbose=args.verbose)
+        ranged_ports = dumps_ports(ports=ports, max_len=args.max)
+        print(ranged_ports)
 
 if __name__ == "__main__":
     main()

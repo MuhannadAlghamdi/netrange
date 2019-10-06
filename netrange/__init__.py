@@ -36,11 +36,6 @@ def load_ipaddrs(from_file=None, from_args=None, verbose=False):
 
 
 def group_ipaddrs(ipaddrs, octet):
-    """
-    Group list of ip addresses by octet number expecting the input ipaddrs is a tuple of 4 indexes
-    :param ipaddrs:
-    :param octet:
-    """
     group = [ipaddrs[0]]
     for ip in ipaddrs[1:]:
         if ip[:octet] == group[-1][:octet]:
@@ -52,10 +47,6 @@ def group_ipaddrs(ipaddrs, octet):
 
 
 def range_ports(ports):
-    """
-    Range list of ports and return list of ranged ports.
-    :param ports:
-    """
     first = last = ports[0]
     for next in ports[1:]:
         if int(next) - 1 == int(last):
@@ -73,10 +64,6 @@ def range_ports(ports):
 
 
 def range_ipaddrs(ipaddrs):
-    """
-    Range a list of of addresses and return list of ranged ip addresses.
-    :param ipaddrs:
-    """
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
         if int(next[3]) - 1 == int(last[3]):
@@ -94,11 +81,6 @@ def range_ipaddrs(ipaddrs):
 
 
 def separate_list(from_list, max_len):
-    """
-    Separate list of it contains an element that longer than max_len.
-    :param from_list:
-    :param max_len:
-    """
     list = []
     for range in from_list:
         if (len_list(list) + len(range) + len(list)) <= max_len:
@@ -110,11 +92,6 @@ def separate_list(from_list, max_len):
 
 
 def len_list(list):
-    """
-    Return the sum of all elements length in list.
-    :param list:
-    :return:
-    """
     max = 0
     for i in list:
         max += len(i)
@@ -125,7 +102,7 @@ def len_list(list):
 def get_ranged_ports(ports, verbose=False):
     unduplicated_ports = list(set(ports))
     duplicated_ports = len(ports) - len(unduplicated_ports)
-    if verbose and duplicated_ports > 0:
+    if verbose:
         print(f'found {duplicated_ports} duplicated ports')
 
     sorted_ports = sorted(unduplicated_ports, key=int)
@@ -136,7 +113,7 @@ def get_ranged_ports(ports, verbose=False):
 def get_ranged_ipadds(ipaddrs, verbose=False):
     unduplicated_ipaddrs = list(set(ipaddrs))
     duplicated_ipaddrs = len(ipaddrs) - len(unduplicated_ipaddrs)
-    if verbose and duplicated_ipaddrs > 0:
+    if verbose:
         print(f'found {duplicated_ipaddrs} duplicated ip addresses')
 
     sorted_ipaddrs = sorted(unduplicated_ipaddrs)
@@ -146,6 +123,7 @@ def get_ranged_ipadds(ipaddrs, verbose=False):
 
 
 def dumps_ipaddrs(ipaddrs, max_len=None, verbose=False):
+    # TODO: verify ipaddrs contains at least one ip
     ranged_ipaddrs = get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
     if max_len is not None:
         separated_ipaddrs = separate_list(from_list=ranged_ipaddrs, max_len=max_len)
@@ -154,6 +132,7 @@ def dumps_ipaddrs(ipaddrs, max_len=None, verbose=False):
 
 
 def dumps_ports(ports, max_len=None, verbose=False):
+    # TODO: verify ports contains at least one port
     ranged_ports = get_ranged_ports(ports=ports, verbose=verbose)
     if max_len is not None:
         separated_ports = separate_list(from_list=ranged_ports, max_len=max_len)
