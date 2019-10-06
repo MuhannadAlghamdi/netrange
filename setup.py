@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name='netrange',
-      version='0.0.5',
+      version='0.0.6',
       description='Script to range multiple IPs and ports',
       url='https://github.com/muhannadengineer/iprange',
       author='Muhannad Alghamdi',
