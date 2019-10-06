@@ -1,6 +1,8 @@
-import twine
+import netrange
+
 from os import path
 from setuptools import setup
+
 
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
@@ -17,7 +19,7 @@ CLASSIFIERS = [
 ]
 
 setup(name='netrange',
-      version='0.0.7',
+      version=netrange.__version__,
       description='Script to range multiple IPs and ports',
       long_description=long_description,
       long_description_content_type='text/markdown',
