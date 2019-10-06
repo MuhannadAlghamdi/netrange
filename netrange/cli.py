@@ -2,7 +2,7 @@ import argparse
 import netrange
 
 
-def main():
+def dispatch(argv):
     parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
     parser.add_argument('--verbose', action='store_true')
     subparser = parser.add_subparsers(dest='options', help='choose script action', required=True)
@@ -19,7 +19,7 @@ def main():
     group.add_argument('--file', type=argparse.FileType('r'))
     port_parser.add_argument('--max', nargs='?', type=int, default=None)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.options == 'ip':
         ipaddrs = netrange.load_ipaddrs(from_args=args.args, from_file=args.file, verbose=args.verbose)
@@ -29,7 +29,3 @@ def main():
         ports = netrange.load_ports(from_args=args.args, from_file=args.file, verbose=args.verbose)
         ranged_ports = netrange.dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
         print(ranged_ports)
-
-
-if __name__ == "__main__":
-    main()

@@ -42,7 +42,7 @@ def dumps_ipaddrs(ipaddrs, max_len=None, verbose=False):
     if max_len is not None:
         separated_ipaddrs = helpers.separate_list(from_list=ranged_ipaddrs, max_len=max_len)
         return '\n'.join([','.join(ipaddrs) for ipaddrs in separated_ipaddrs])
-    return '\n'.join([ipaddrs for ipaddrs in ranged_ipaddrs])
+    return ','.join([ipaddrs for ipaddrs in ranged_ipaddrs])
 
 
 def dumps_ports(ports, max_len=None, verbose=False):
@@ -51,7 +51,7 @@ def dumps_ports(ports, max_len=None, verbose=False):
     if max_len is not None:
         separated_ports = helpers.separate_list(from_list=ranged_ports, max_len=max_len)
         return '\n'.join([','.join(ports) for ports in separated_ports])
-    return '\n'.join([ports for ports in ranged_ports])
+    return ','.join([ports for ports in ranged_ports])
 
 
 def dump_ipaddrs(ipaddrs, max_len=None, verbose=False):

@@ -7,7 +7,7 @@ from netrange.core import load_ports
 
 __version__ = '0.0.8'
 __all__ = [
-    'dump_ipaddrs', 'dump_ports', 'dumps_ipaddrs', 'dumps_ports', 'load_ipaddrs', 'load_ports'
+    'dump_ipaddrs', 'dump_ports', 'dumps_ipaddrs', 'dumps_ports', 'load_ipaddrs', 'load_ports', '__author__'
 ]
 
 __author__ = 'Muhannad Alghamdi <muhannadengineer@gmail.com>'
