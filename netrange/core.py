@@ -24,10 +24,10 @@ def load_ipaddrs(from_file=None, from_args=None, verbose=False):
         with open(from_file, 'r') as f:
             contents = f.read()
 
-    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+    regex = r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 
     ipaddrs = re.findall(pattern=regex, string=contents)
     if verbose:
@@ -37,8 +37,16 @@ def load_ipaddrs(from_file=None, from_args=None, verbose=False):
 
 
 def dumps_ipaddrs(ipaddrs, max_len=None, verbose=False):
-    # TODO: verify ipaddrs contains at least one ip
-    ranged_ipaddrs = helpers.get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+    ipaddrs_tuple = re.findall(pattern=regex, string='\n'.join(ipaddrs))
+    if not ipaddrs_tuple:
+        return
+
+    ranged_ipaddrs = helpers.get_ranged_ipadds(ipaddrs=ipaddrs_tuple, verbose=verbose)
     if max_len is not None:
         separated_ipaddrs = helpers.separate_list(from_list=ranged_ipaddrs, max_len=max_len)
         return '\n'.join([','.join(ipaddrs) for ipaddrs in separated_ipaddrs])
@@ -55,8 +63,16 @@ def dumps_ports(ports, max_len=None, verbose=False):
 
 
 def dump_ipaddrs(ipaddrs, max_len=None, verbose=False):
-    # TODO: verify ipaddrs contains at least one ip
-    ranged_ipaddrs = helpers.get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+    ipaddrs_tuple = re.findall(pattern=regex, string='\n'.join(ipaddrs))
+    if not ipaddrs_tuple:
+        return
+
+    ranged_ipaddrs = helpers.get_ranged_ipadds(ipaddrs=ipaddrs_tuple, verbose=verbose)
     if max_len is not None:
         separated_ipaddrs = helpers.separate_list(from_list=ranged_ipaddrs, max_len=max_len)
         return [','.join(ipaddrs) for ipaddrs in separated_ipaddrs]
