@@ -1,9 +1,5 @@
 import argparse
-
-from netrange import load_ipaddrs
-from netrange import load_ports
-from netrange import dumps_ipaddrs
-from netrange import dumps_ports
+import netrange
 
 
 def main():
@@ -26,13 +22,14 @@ def main():
     args = parser.parse_args()
 
     if args.options == 'ip':
-        ipaddrs = load_ipaddrs(from_args=args.args, from_file=args.file, verbose=args.verbose)
-        ranged_ipaddrs = dumps_ipaddrs(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
+        ipaddrs = netrange.load_ipaddrs(from_args=args.args, from_file=args.file, verbose=args.verbose)
+        ranged_ipaddrs = netrange.dumps_ipaddrs(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
         print(ranged_ipaddrs)
     elif args.options == 'port':
-        ports = load_ports(from_args=args.args, from_file=args.file, verbose=args.verbose)
-        ranged_ports = dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
+        ports = netrange.load_ports(from_args=args.args, from_file=args.file, verbose=args.verbose)
+        ranged_ports = netrange.dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
         print(ranged_ports)
+
 
 if __name__ == "__main__":
     main()
