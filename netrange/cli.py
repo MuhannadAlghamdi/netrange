@@ -5,6 +5,7 @@ import netrange
 def dispatch(argv):
     parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
     parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--version', action='version', version=netrange.__version__)
     subparser = parser.add_subparsers(dest='options', help='choose script action', required=True)
 
     ip_parser = subparser.add_parser('ip', help='ip options')
