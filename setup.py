@@ -10,9 +10,6 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 
 CLASSIFIERS = [
-    'Topic :: Printing',
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent'
