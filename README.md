@@ -19,7 +19,7 @@ netrange ip --args 192.168.1.2 192.168.1.3 192.168.1.4
 192.168.1.2-4
 ```
 
-### From Modual
+### From Module
 
 ```python
 import netrange
