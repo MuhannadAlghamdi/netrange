@@ -1,6 +1,6 @@
 # NetRange
 
-This is a library that can load IP addresses and ports from list or file and return a list of ranges.
+[![PyPI version](https://badge.fury.io/py/netrange.svg)](https://badge.fury.io/py/netrange)
 
 ## Installation
 
