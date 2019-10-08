@@ -1,6 +1,3 @@
-import re
-
-
 def group_ipaddrs(ipaddrs, octet):
     group = [ipaddrs[0]]
     for ip in ipaddrs[1:]:
