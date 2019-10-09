@@ -1,5 +1,7 @@
 # NetRange
 
+A simple package for reading and ranging IPs and ports.
+
 ![PyPI](https://img.shields.io/pypi/v/netrange)
 ![Travis (.org)](https://img.shields.io/travis/muhannadalghamdi/netrange)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/netrange)
