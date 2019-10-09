@@ -2,12 +2,12 @@
 
 A simple package for reading and ranging IPs and ports.
 
-![PyPI](https://img.shields.io/pypi/v/netrange)
+[![PyPI](https://img.shields.io/pypi/v/netrange)](https://pypi.org/project/netrange/)
 ![Travis (.org)](https://img.shields.io/travis/muhannadalghamdi/netrange)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/netrange)
 ![GitHub](https://img.shields.io/github/license/muhannadalghamdi/netrange)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/netrange)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/netrange)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/netrange)](https://pypi.org/project/netrange/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/netrange)](https://pypi.org/project/netrange/#files)
 
 ## Installation
 
