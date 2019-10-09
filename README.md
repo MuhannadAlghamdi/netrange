@@ -1,6 +1,6 @@
 # NetRange
 
-[![PyPI version](https://badge.fury.io/py/netrange.svg)](https://badge.fury.io/py/netrange)
+![PyPI](https://img.shields.io/pypi/v/netrange)
 ![Travis (.org)](https://img.shields.io/travis/muhannadalghamdi/netrange)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/netrange)
 ![GitHub](https://img.shields.io/github/license/muhannadalghamdi/netrange)
