@@ -4,8 +4,6 @@ from os import path
 from setuptools import setup
 
 
-description = 'A simple package for reading and ranging IPs and ports'
-
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
@@ -19,7 +17,7 @@ CLASSIFIERS = [
 
 setup(name='netrange',
       version=netrange.__version__,
-      description=description,
+      description=netrange.__description__,
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/muhannadengineer/iprange',

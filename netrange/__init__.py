@@ -5,9 +5,18 @@ from netrange.core import dumps_ports
 from netrange.core import load_ipaddrs
 from netrange.core import load_ports
 
-__version__ = '0.0.11'
-__all__ = [
-    'dump_ipaddrs', 'dump_ports', 'dumps_ipaddrs', 'dumps_ports', 'load_ipaddrs', 'load_ports', '__author__'
-]
 
+__version__ = '0.0.11'
 __author__ = 'Muhannad Alghamdi <muhannadengineer@gmail.com>'
+__description__ = 'A simple package for reading and ranging IPs and ports.'
+__all__ = [
+    'dump_ipaddrs',
+    'dump_ports',
+    'dumps_ipaddrs',
+    'dumps_ports',
+    'load_ipaddrs',
+    'load_ports',
+    '__author__',
+    '__version__',
+    '__description__'
+]

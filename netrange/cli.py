@@ -3,18 +3,18 @@ import netrange
 
 
 def dispatch(argv):
-    parser = argparse.ArgumentParser(prog='IP Range', description='Script to range multiple IPs as well as ports.')
-    parser.add_argument('--verbose', action='store_true')
+    parser = argparse.ArgumentParser(prog='IP Range', description=netrange.__description__)
     parser.add_argument('--version', action='version', version=netrange.__version__)
-    subparser = parser.add_subparsers(dest='options', help='choose script action', required=True)
+    parser.add_argument('--verbose', action='store_true')
+    subparser = parser.add_subparsers(dest='options', help='choose one option', required=True)
 
-    ip_parser = subparser.add_parser('ip', help='ip options')
+    ip_parser = subparser.add_parser('ip')
     group = ip_parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--args', nargs='+')
     group.add_argument('--file')
     ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
 
-    port_parser = subparser.add_parser('port', help='port options')
+    port_parser = subparser.add_parser('port')
     group = port_parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--args', nargs='+')
     group.add_argument('--file')

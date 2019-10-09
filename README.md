@@ -20,8 +20,18 @@ pip install netrange
 ### From CLI
 
 ```bash
-netrange ip --args 192.168.1.2 192.168.1.3 192.168.1.4
-192.168.1.2-4
+$ netrange --help
+usage: IP Range [-h] [--version] [--verbose] {ip,port} ...
+
+A simple package for reading and ranging IPs and ports.
+
+positional arguments:
+  {ip,port}   choose one option
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --version   show program's version number and exit
+  --verbose
 ```
 
 ### From Module
