@@ -1,4 +1,4 @@
-def group_ipaddrs(ipaddrs, octet):
+def _group_ipaddrs(ipaddrs, octet):
     group = [ipaddrs[0]]
     for ip in ipaddrs[1:]:
         if ip[:octet] == group[-1][:octet]:
@@ -9,7 +9,7 @@ def group_ipaddrs(ipaddrs, octet):
     yield group
 
 
-def range_ports(ports):
+def _range_ports(ports):
     first = last = ports[0]
     for next in ports[1:]:
         if int(next) - 1 == int(last):
@@ -26,7 +26,7 @@ def range_ports(ports):
         yield first + '-' + last
 
 
-def range_ipaddrs(ipaddrs):
+def _range_ipaddrs(ipaddrs):
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
         if int(next[3]) - 1 == int(last[3]):
@@ -46,7 +46,7 @@ def range_ipaddrs(ipaddrs):
 def separate_list(from_list, max_len):
     list = []
     for range in from_list:
-        if (len_list(list) + len(range) + len(list)) <= max_len:
+        if (_len_list(list) + len(range) + len(list)) <= max_len:
             list.append(range)
         else:
             yield list
@@ -54,7 +54,7 @@ def separate_list(from_list, max_len):
     yield list
 
 
-def len_list(list):
+def _len_list(list):
     max = 0
     for i in list:
         max += len(i)
@@ -69,7 +69,7 @@ def get_ranged_ports(ports, verbose=False):
         print(f'found {duplicated_ports} duplicated ports')
 
     sorted_ports = sorted(unduplicated_ports, key=int)
-    for ranged_ports in range_ports(ports=sorted_ports):
+    for ranged_ports in _range_ports(ports=sorted_ports):
         yield ranged_ports
 
 
@@ -80,6 +80,6 @@ def get_ranged_ipadds(ipaddrs, verbose=False):
         print(f'found {duplicated_ipaddrs} duplicated ip addresses')
 
     sorted_ipaddrs = sorted(unduplicated_ipaddrs)
-    for grouped_ipaddrs in group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
-        for ranged_ipaddrs in range_ipaddrs(ipaddrs=grouped_ipaddrs):
+    for grouped_ipaddrs in _group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
+        for ranged_ipaddrs in _range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs

@@ -1,13 +1,12 @@
-from netrange.core import dump_ipaddrs
-from netrange.core import dump_ports
-from netrange.core import dumps_ipaddrs
-from netrange.core import dumps_ports
-from netrange.core import load_ipaddrs
-from netrange.core import load_ports
+from netrange.dump import dump_ipaddrs
+from netrange.dump import dump_ports
+from netrange.dump import dumps_ipaddrs
+from netrange.dump import dumps_ports
+from netrange.load import load_ipaddrs
+from netrange.load import load_ports
 
 
 __version__ = '0.0.11'
-__author__ = 'Muhannad Alghamdi <muhannadengineer@gmail.com>'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
     'dump_ipaddrs',
