@@ -1,7 +1,5 @@
 import argparse
 import netrange
-from netrange import ip
-from netrange import port
 
 
 def dispatch(argv):
@@ -26,15 +24,15 @@ def dispatch(argv):
 
     if args.options == 'ip':
         if args.args:
-            ipaddrs = ip.loads(from_args=args.args, verbose=args.verbose)
+            ipaddrs = netrange.load_ips_from_string(*list(args.args), verbose=args.verbose)
         elif args.file:
-            ipaddrs = ip.load(from_file=args.file, verbose=args.verbose)
-        ranged_ipaddrs = ip.dumps(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
+            ipaddrs = netrange.load_ips_from_file(file=args.file, verbose=args.verbose)
+        ranged_ipaddrs = netrange.dump_ips_string(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
         print(ranged_ipaddrs)
     elif args.options == 'port':
         if args.args:
-            ports = port.loads(from_args=args.args, verbose=args.verbose)
+            ports = netrange.load_ports_from_string(args.args, verbose=args.verbose)
         elif args.file:
-            ports = port.load(from_file=args.file, verbose=args.verbose)
-        ranged_ports = port.dumps(ports=ports, max_len=args.max, verbose=args.verbose)
+            ports = netrange.load_ports_from_file(file=args.file, verbose=args.verbose)
+        ranged_ports = netrange.dump_ports_string(ports=ports, max_len=args.max, verbose=args.verbose)
         print(ranged_ports)

@@ -11,7 +11,8 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 CLASSIFIERS = [
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.7'
+    'Programming Language :: Python :: 3.6'
     'Operating System :: OS Independent'
 ]
 

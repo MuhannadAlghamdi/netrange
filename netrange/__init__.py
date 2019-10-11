@@ -1,13 +1,29 @@
-from netrange import ip
-from netrange import port
+from netrange.dump import dump_ips_list
+from netrange.dump import dump_ports_list
+from netrange.dump import dump_ips_string
+from netrange.dump import dump_ports_string
+
+from netrange.load import load_ips_from_file
+from netrange.load import load_ports_from_file
+from netrange.load import load_ips_from_string
+from netrange.load import load_ports_from_string
 
 
-__version__ = '0.0.12'
+__version__ = '0.0.13'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
-    'ip',
-    'port',
     '__author__',
     '__version__',
-    '__description__'
+    '__description__',
+    'cli',
+    'dump',
+    'load',
+    'dump_ips_list',
+    'dump_ports_list',
+    'dump_ips_string',
+    'dump_ports_string',
+    'load_ips_from_file',
+    'load_ports_from_file',
+    'load_ips_from_string',
+    'load_ports_from_string',
 ]
