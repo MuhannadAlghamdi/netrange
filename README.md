@@ -1,11 +1,13 @@
 # NetRange
 
-[![PyPI version](https://badge.fury.io/py/netrange.svg)](https://badge.fury.io/py/netrange)
+A simple package for reading and ranging IPs and ports.
+
+[![PyPI](https://img.shields.io/pypi/v/netrange)](https://pypi.org/project/netrange/)
 ![Travis (.org)](https://img.shields.io/travis/muhannadalghamdi/netrange)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/netrange)
 ![GitHub](https://img.shields.io/github/license/muhannadalghamdi/netrange)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/netrange)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/netrange)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/netrange)](https://pypi.org/project/netrange/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/netrange)](https://pypi.org/project/netrange/#files)
 
 ## Installation
 
@@ -20,16 +22,26 @@ pip install netrange
 ### From CLI
 
 ```bash
-netrange ip --args 192.168.1.2 192.168.1.3 192.168.1.4
-192.168.1.2-4
+$ netrange --help
+usage: IP Range [-h] [--version] [--verbose] {ip,port} ...
+
+A simple package for reading and ranging IPs and ports.
+
+positional arguments:
+  {ip,port}   choose one option
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --version   show program's version number and exit
+  --verbose
 ```
 
 ### From Module
 
 ```python
-import netrange
+from netrange import ip
 
 
-ips = netrange.load_ipaddrs(from_file=file)
-ranged_ips = netrange.dump(ips)
+ips = ip.load(from_file=file)
+ranged_ips = ip.dump(ips)
 ```
