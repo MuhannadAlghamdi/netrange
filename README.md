@@ -39,9 +39,9 @@ optional arguments:
 ### From Module
 
 ```python
-import netrange
+from netrange import ip
 
 
-ips = netrange.load_ipaddrs(from_file=file)
-ranged_ips = netrange.dump(ips)
+ips = ip.load(from_file=file)
+ranged_ips = ip.dump(ips)
 ```
