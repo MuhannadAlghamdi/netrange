@@ -2,7 +2,7 @@ from netrange import ip
 from netrange import port
 
 
-__version__ = '0.0.11'
+__version__ = '0.0.12'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
     'ip',
