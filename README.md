@@ -39,7 +39,7 @@ optional arguments:
 ### From Module
 
 ```python
-from netrange import ip
+import netrange
 
 
 ips = ip.load(from_file=file)

@@ -3,6 +3,7 @@ from netrange._parser import parse_ipaddrs
 
 
 def load_ips_from_file(file, verbose=False):
+    # TODO: check if file exists
     contents = file.read()
     ipaddrs = parse_ipaddrs(contents=contents)
 
