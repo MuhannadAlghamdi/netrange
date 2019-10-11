@@ -1,3 +1,29 @@
+import re
+
+
+def parse_ports(contents):
+    regex = r'\b([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]?)\b'
+    return re.findall(pattern=regex, string=contents)
+
+
+def parse_ipaddrs(contents):
+    regex = r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+    return re.findall(pattern=regex, string=contents)
+
+
+def parse_ipaddrs_tuples(contents):
+    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+    return re.findall(pattern=regex, string=contents)
+
+
 def _group_ipaddrs(ipaddrs, octet):
     group = [ipaddrs[0]]
     for ip in ipaddrs[1:]:
