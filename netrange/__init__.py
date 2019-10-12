@@ -8,11 +8,9 @@ from netrange.load import load_ports_from_file
 from netrange.load import load_ips_from_string
 from netrange.load import load_ports_from_string
 
-
 __version__ = '0.0.13'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
-    '__author__',
     '__version__',
     '__description__',
     'cli',
