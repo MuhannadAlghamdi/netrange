@@ -1,11 +1,11 @@
 from netrange._parser import separate_list
 from netrange._parser import get_ranged_ports
 from netrange._parser import get_ranged_ipadds
-from netrange._parser import parse_ipaddrs_tuples
+from netrange._parser import parse_ipaddrs
 
 
 def dump_ips_string(ipaddrs, max_len=None, verbose=False):
-    ipaddrs_tuple = parse_ipaddrs_tuples('\n'.join(ipaddrs))
+    ipaddrs_tuple = parse_ipaddrs(contents='\n'.join(ipaddrs))
     if not ipaddrs_tuple:
         return
 
@@ -17,7 +17,7 @@ def dump_ips_string(ipaddrs, max_len=None, verbose=False):
 
 
 def dump_ips_list(ipaddrs, max_len=None, verbose=False):
-    ipaddrs_tuple = parse_ipaddrs_tuples('\n'.join(ipaddrs))
+    ipaddrs_tuple = parse_ipaddrs('\n'.join(ipaddrs))
     if not ipaddrs_tuple:
         return
 

@@ -6,22 +6,16 @@ def parse_ports(contents):
     return re.findall(pattern=regex, string=contents)
 
 
+
 def parse_ipaddrs(contents):
-    regex = r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-
-    return re.findall(pattern=regex, string=contents)
-
-
-def parse_ipaddrs_tuples(contents):
     regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+            r'((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\-(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))?)'
 
-    return re.findall(pattern=regex, string=contents)
+    ipaddrs = re.findall(pattern=regex, string=contents)
+    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs=ipaddrs)
+    return [ipaddr for ipaddr in unranged_ipaddrs]
 
 
 def _group_ipaddrs(ipaddrs, octet):
@@ -50,6 +44,17 @@ def _range_ports(ports):
         yield first
     else:
         yield first + '-' + last
+
+
+def _unrange_ipaddrs(ipaddrs):
+    for ipaddr in ipaddrs:
+        if '-' not in ipaddr[3]:
+            yield ipaddr
+        else:
+            left, right = ipaddr[3].split('-')
+            if left < right:
+                for i in range(int(left), int(right) + 1):
+                    yield ipaddr[:3] + (str(i),)
 
 
 def _range_ipaddrs(ipaddrs):
