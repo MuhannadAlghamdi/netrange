@@ -60,18 +60,18 @@ def _unrange_ipaddrs(ipaddrs):
 def _range_ipaddrs(ipaddrs):
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
-        if int(next[3]) - 1 == int(last[3]):
+        if next[3] - 1 == last[3]:
             last = next
         else:
             if first == last:
-                yield '.'.join(first)
+                yield '.'.join(map(str, first))
             else:
-                yield '.'.join(first) + '-' + last[3]
+                yield '.'.join(map(str, first)) + '-' + str(last[3])
             first = last = next
     if first == last:
-        yield '.'.join(first)
+        yield '.'.join(map(str, first))
     else:
-        yield '.'.join(first) + '-' + last[3]
+        yield '.'.join(map(str, first)) + '-' + str(last[3])
 
 
 def separate_list(from_list, max_len):
@@ -110,7 +110,21 @@ def get_ranged_ipadds(ipaddrs, verbose=False):
     if verbose:
         print(f'found {duplicated_ipaddrs} duplicated ip addresses')
 
-    sorted_ipaddrs = sorted(unduplicated_ipaddrs)
+    # groups = group_ipaddrs_by_octet(unduplicated_ipaddrs, 3)
+    # sorted_groups = [{key: sorted(map(int, values))} for key, values in groups.items()]
+
+    integer_ipaddrs = [tuple(int(octet) for octet in list(ipaddr)) for ipaddr in unduplicated_ipaddrs]
+    sorted_ipaddrs = sorted(integer_ipaddrs)
     for grouped_ipaddrs in _group_ipaddrs(ipaddrs=sorted_ipaddrs, octet=3):
         for ranged_ipaddrs in _range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs
+
+
+def group_ipaddrs_by_octet(ipaddrs, octet=3):
+    groups = {}
+    for ip in ipaddrs:
+        if ip[:octet] not in groups:
+            groups[ip[:octet]] = []
+        groups[ip[:octet]].append(ip[3])
+
+    return groups

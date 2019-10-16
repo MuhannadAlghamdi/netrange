@@ -17,7 +17,7 @@ def test_load_ips_from_file():
     file_name = f'{this_directory}/ips'
     file = open(file=file_name, mode='r')
     ips = netrange.load_ips_from_file(file=file)
-    assert len(ips) == 4
+    assert len(ips) == 255
 
 
 def test_load_ports_from_string():
