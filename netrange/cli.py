@@ -31,7 +31,7 @@ def dispatch(argv):
         print(ranged_ipaddrs)
     elif args.options == 'port':
         if args.args:
-            ports = netrange.load_ports_from_string(args.args, verbose=args.verbose)
+            ports = netrange.load_ports_from_string(*list(args.args), verbose=args.verbose)
         elif args.file:
             ports = netrange.load_ports_from_file(file=args.file, verbose=args.verbose)
         ranged_ports = netrange.dump_ports_string(ports=ports, max_len=args.max, verbose=args.verbose)
