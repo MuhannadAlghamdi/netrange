@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pytest = ">=3.7"
+autopep8 = "*"
 
 [packages]
 netrange = {editable = true,path = "."}
