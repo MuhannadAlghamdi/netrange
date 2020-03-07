@@ -1,3 +1,4 @@
+import sys
 import argparse
 import netrange
 
@@ -9,10 +10,11 @@ def create_parser():
     subparser = parser.add_subparsers(dest='options', help='choose one option', required=True)
 
     ip_parser = subparser.add_parser('ip')
-    group = ip_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--args', nargs='+')
-    group.add_argument('--file', type=argparse.FileType())
+    ip_parser.add_argument('args', nargs='*')
+    ip_parser.add_argument('stdin', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
+    ip_parser.add_argument('--file', type=argparse.FileType())
     ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
+    ip_parser.add_argument('--range', action='store_true')
 
     port_parser = subparser.add_parser('port')
     group = port_parser.add_mutually_exclusive_group(required=True)
@@ -28,11 +30,17 @@ def parse_args(args):
     args = parser.parse_args(args)
 
     if args.options == 'ip':
-        if args.args:
-            ipaddrs = netrange.load_ips_from_string(*list(args.args), verbose=args.verbose)
-        elif args.file:
+        if not sys.stdin.isatty():
+            stdin = args.stdin.read().splitlines()
+        else:
+            stdin = []
+
+        ipaddrs = netrange.load_ips_from_string(*list(args.args + stdin), verbose=args.verbose)
+
+        if args.file:
             ipaddrs = netrange.load_ips_from_file(file=args.file, verbose=args.verbose)
-        ranged_ipaddrs = netrange.dump_ips_string(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose)
+
+        ranged_ipaddrs = netrange.dumps_ips(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose, range=args.range)
         print(ranged_ipaddrs)
     elif args.options == 'port':
         if args.args:

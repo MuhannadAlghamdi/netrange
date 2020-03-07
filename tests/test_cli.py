@@ -1,6 +1,6 @@
-from netrange.cli import dispatch
+from netrange.cli import parse_args
 
 
 def test_ips():
-    output = dispatch('ip')
+    output = parse_args('ip')
     assert output == 'args'

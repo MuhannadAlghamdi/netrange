@@ -1,6 +1,6 @@
-from netrange.dump import dump_ips_list
+from netrange.dump import dumps_ips
 from netrange.dump import dump_ports_list
-from netrange.dump import dump_ips_string
+from netrange.dump import dumps_ips
 from netrange.dump import dump_ports_string
 
 from netrange.load import load_ips_from_file
@@ -16,9 +16,9 @@ __all__ = [
     'cli',
     'dump',
     'load',
-    'dump_ips_list',
+    'dump_ips',
     'dump_ports_list',
-    'dump_ips_string',
+    'dumps_ips',
     'dump_ports_string',
     'load_ips_from_file',
     'load_ports_from_file',

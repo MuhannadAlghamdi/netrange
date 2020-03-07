@@ -10,14 +10,14 @@ ports_list = ['0', '20', '21', '22', '23', '25', '53', '80']
 
 def test_load_ips_from_string():
     ips = netrange.load_ips_from_string(*ips_list)
-    assert len(ips) == 8
+    assert len(ips) == 9
 
 
 def test_load_ips_from_file():
     file_name = f'{this_directory}/ips'
     file = open(file=file_name, mode='r')
     ips = netrange.load_ips_from_file(file=file)
-    assert len(ips) == 255
+    assert len(ips) == 256
 
 
 def test_load_ports_from_string():
