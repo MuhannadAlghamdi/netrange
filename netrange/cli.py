@@ -17,10 +17,11 @@ def create_parser():
     ip_parser.add_argument('--range', action='store_true')
 
     port_parser = subparser.add_parser('port')
-    group = port_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--args', nargs='+')
-    group.add_argument('--file', type=argparse.FileType())
+    port_parser.add_argument('args', nargs='*')
+    port_parser.add_argument('stdin', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
+    port_parser.add_argument('--file', type=argparse.FileType())
     port_parser.add_argument('--max', nargs='?', type=int, default=None)
+    port_parser.add_argument('--range', action='store_true')
 
     return parser
 
@@ -28,24 +29,19 @@ def create_parser():
 def parse_args(args):
     parser = create_parser()
     args = parser.parse_args(args)
-
     if args.options == 'ip':
-        if not sys.stdin.isatty():
-            stdin = args.stdin.read().splitlines()
-        else:
-            stdin = []
-
-        ipaddrs = netrange.load_ips_from_string(*list(args.args + stdin), verbose=args.verbose)
-
-        if args.file:
-            ipaddrs = netrange.load_ips_from_file(file=args.file, verbose=args.verbose)
-
+        stdin = args.args
+        piped_stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
+        from_file = netrange.load_ips_from_file(file=args.file, verbose=args.verbose) if args.file else []
+        ipaddrs = netrange.load_ips_from_string(*list(stdin + piped_stdin + from_file), verbose=args.verbose)
         ranged_ipaddrs = netrange.dumps_ips(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose, range=args.range)
         print(ranged_ipaddrs)
+        exit(0)
     elif args.options == 'port':
-        if args.args:
-            ports = netrange.load_ports_from_string(*list(args.args), verbose=args.verbose)
-        elif args.file:
+        stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
+        ports = netrange.load_ports_from_string(*list(args.args + stdin), verbose=args.verbose)
+        if args.file:
             ports = netrange.load_ports_from_file(file=args.file, verbose=args.verbose)
-        ranged_ports = netrange.dump_ports_string(ports=ports, max_len=args.max, verbose=args.verbose)
+
+        ranged_ports = netrange.dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
         print(ranged_ports)
