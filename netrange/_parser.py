@@ -1,4 +1,5 @@
 import re
+from ipaddress import IPv4Address
 
 
 def parse_ports(contents):
@@ -10,7 +11,7 @@ def parse_ipaddrs(contents):
     regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
             r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\-(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))?)'
+            r'((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?:\-(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|(?:\/(?:3[0-2]|[1-2][0-9]|[0-9])))?)'
 
     ipaddrs = re.findall(pattern=regex, string=contents)
     unranged_ipaddrs = _unrange_ipaddrs(ipaddrs=ipaddrs)
@@ -41,6 +42,13 @@ def _unrange_ipaddrs(ipaddrs):
             if left < right:
                 for i in range(int(left), int(right) + 1):
                     yield ipaddr[:3] + (str(i),)
+        elif '/' in ipaddr[3]:
+            pass
+            # try:
+            #     cidr = IPv4Address(address=ipaddr)
+            #     yield str(cidr)
+            # except Exception as e:
+            #     print(f'unable to parse {ipaddr}. {e}')
         else:
             yield ipaddr
 
@@ -114,6 +122,7 @@ def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
         groups[ip[:octet]].append(ip[3])
 
     return groups
+
 
 def _group_ipaddrs_by_octet(ipaddrs, octet=3):
     ipaddrs = sorted(ipaddrs)
