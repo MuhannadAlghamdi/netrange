@@ -2,20 +2,51 @@ import re
 from ipaddress import IPv4Address
 
 
-def parse_ports(contents):
-    regex = r'\b([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]?)\b'
-    return re.findall(pattern=regex, string=contents)
+def parse_ports(contents, unrange=False):
+    PORT_REGEX = r'6553[1-5]?|655[1-2][0-9]|65[1-4][0-9]{2}|6[1-4][0-9]{3}|[1-5]?[0-9]{2,4}|[1-9]'
+
+    regex = (
+        r'('
+        r'(?:(?:' + PORT_REGEX + r')(?![-]))'
+        r'|'
+        r'(?:(?:' + PORT_REGEX + r')\-(?:' + PORT_REGEX + r'))'
+        r')'
+    )
+
+    ports = re.findall(pattern=r'\b%s\b' % regex, string=contents)
+    ports = _validate_ports(ports)
+
+    if unrange:
+        # TODO: create unrange finc for ports
+        pass
+
+    return ports
 
 
-def parse_ipaddrs(contents):
-    regex = r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
-            r'((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?:\-(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|(?:\/(?:3[0-2]|[1-2][0-9]|[0-9])))?)'
+def parse_ipaddrs(contents, unrange=False):
+    IP_REGEX = r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?'
+    CIDR_REGEX = r'3[0-2]|[12]?[0-9]'
 
-    ipaddrs = re.findall(pattern=regex, string=contents)
-    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs=ipaddrs)
-    return [ipaddr for ipaddr in unranged_ipaddrs]
+    regex = (
+        r'(' + IP_REGEX + r')\.'  # first octet
+        r'(' + IP_REGEX + r')\.'  # second octet
+        r'(' + IP_REGEX + r')\.'  # third octet
+        r'('  # forth octet begin
+        r'(?:(?:' + IP_REGEX + r')(?![-/]))'                    # if ends with with on - or /
+        r'|'
+        r'(?:(?:' + IP_REGEX + r')\-(?:' + IP_REGEX + r'))'     # if ends with - and octet
+        r'|'
+        r'(?:(?:' + IP_REGEX + r')\/(?:' + CIDR_REGEX + r'))'   # if ends with / and cidr
+        r')'  # forth octet end
+    )
+
+    ipaddrs = re.findall(pattern=r'\b%s\b' % regex, string=contents)
+    ipaddrs = _validate_ipaddrs(ipaddrs)
+
+    if unrange:
+        return [ipaddr for ipaddr in _unrange_ipaddrs(ipaddrs=ipaddrs)]
+
+    return [ipaddr for ipaddr in ipaddrs]
 
 
 def _range_ports(ports):
@@ -35,6 +66,26 @@ def _range_ports(ports):
         yield first + '-' + last
 
 
+def _validate_ipaddrs(ipaddrs):
+    for ipaddr in ipaddrs:
+        if '-' in ipaddr[3]:
+            left, right = ipaddr[3].split('-')
+            if int(left) < int(right):
+                yield ipaddr
+        else:
+            yield ipaddr
+
+
+def _validate_ports(ports):
+    for port in ports:
+        if '-' in port:
+            left, right = port.split('-')
+            if int(left) < int(right):
+                yield port
+        else:
+            yield port
+
+
 def _unrange_ipaddrs(ipaddrs):
     for ipaddr in ipaddrs:
         if '-' in ipaddr[3]:
@@ -42,13 +93,6 @@ def _unrange_ipaddrs(ipaddrs):
             if left < right:
                 for i in range(int(left), int(right) + 1):
                     yield ipaddr[:3] + (str(i),)
-        elif '/' in ipaddr[3]:
-            pass
-            # try:
-            #     cidr = IPv4Address(address=ipaddr)
-            #     yield str(cidr)
-            # except Exception as e:
-            #     print(f'unable to parse {ipaddr}. {e}')
         else:
             yield ipaddr
 
@@ -102,7 +146,7 @@ def get_ranged_ports(ports, verbose=False):
 
 
 def get_ranged_ipadds(ipaddrs, verbose=False):
-    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ipaddrs))
+    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ipaddrs), unrange=True)
     unduplicated_ipaddrs = list(set(ipaddrs_tuples))
     duplicated_ipaddrs = len(ipaddrs_tuples) - len(unduplicated_ipaddrs)
     if verbose:

@@ -29,21 +29,28 @@ def dump_ips(ipaddrs, max_len=None, verbose=False, range=False):
     return [ipaddrs for ipaddrs in ranged_ipaddrs]
 
 
-def dumps_ports(ports, max_len=None, verbose=False):
+def dumps_ports(ports, max_len=None, verbose=False, range=False):
+    ports = sorted(ports)
+
+    if range:
+        ports = get_ranged_ports(ports=ports, verbose=verbose)
+
+    # TODO: verify ports contains at least one port
+    if max_len is not None:
+        separated_ports = separate_list(from_list=ports, max_len=max_len)
+        return '\n'.join([','.join(ports) for ports in separated_ports])
+
+    return '\n'.join([port for port in ports])
+
+
+def dump_ports(ports, max_len=None, verbose=False, range=False):
     ports = sorted(ports)
 
     # TODO: verify ports contains at least one port
-    ranged_ports = get_ranged_ports(ports=ports, verbose=verbose)
-    if max_len is not None:
-        separated_ports = separate_list(from_list=ranged_ports, max_len=max_len)
-        return '\n'.join([','.join(ports) for ports in separated_ports])
-    return ','.join([ports for ports in ranged_ports])
+    if range:
+        ports = get_ranged_ports(ports=ports, verbose=verbose)
 
-
-def dump_ports(ports, max_len=None, verbose=False):
-    # TODO: verify ports contains at least one port
-    ranged_ports = get_ranged_ports(ports=ports, verbose=verbose)
     if max_len is not None:
-        separated_ports = separate_list(from_list=ranged_ports, max_len=max_len)
-        return [','.join(ports) for ports in separated_ports]
-    return [ports for ports in ranged_ports]
+        separated_ports = separate_list(from_list=ports, max_len=max_len)
+        return [','.join(port) for port in ports]
+    return [port for port in ports]

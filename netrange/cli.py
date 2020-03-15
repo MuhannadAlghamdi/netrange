@@ -33,15 +33,15 @@ def parse_args(args):
         stdin = args.args
         piped_stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
         from_file = netrange.load_ips_from_file(file=args.file, verbose=args.verbose) if args.file else []
-        ipaddrs = netrange.load_ips_from_string(*list(stdin + piped_stdin + from_file), verbose=args.verbose)
+        ipaddrs = netrange.loads_ips(*list(stdin + piped_stdin + from_file), verbose=args.verbose)
         ranged_ipaddrs = netrange.dumps_ips(ipaddrs=ipaddrs, max_len=args.max, verbose=args.verbose, range=args.range)
         print(ranged_ipaddrs)
         exit(0)
     elif args.options == 'port':
-        stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
-        ports = netrange.load_ports_from_string(*list(args.args + stdin), verbose=args.verbose)
-        if args.file:
-            ports = netrange.load_ports_from_file(file=args.file, verbose=args.verbose)
-
-        ranged_ports = netrange.dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose)
+        stdin = args.args
+        piped_stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
+        from_file = netrange.load_ports_from_file(file=args.file, verbose=args.verbose) if args.file else []
+        ports = netrange.loads_ports(*list(stdin + piped_stdin + from_file), verbose=args.verbose)
+        ranged_ports = netrange.dumps_ports(ports=ports, max_len=args.max, verbose=args.verbose, range=args.range)
         print(ranged_ports)
+        exit(0)

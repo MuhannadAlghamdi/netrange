@@ -12,7 +12,7 @@ def load_ips_from_file(file, verbose=False):
     return ['.'.join(ip) for ip in ips]
 
 
-def load_ips_from_string(*ips, verbose=False):
+def loads_ips(*ips, verbose=False):
     ips = parse_ipaddrs(contents='\n'.join(ips))
 
     if verbose:
@@ -21,19 +21,19 @@ def load_ips_from_string(*ips, verbose=False):
     return ['.'.join(ip) for ip in ips]
 
 
-def load_ports_from_string(*ports, verbose=False):
-    contents = '\n'.join(ports)
-    ports = parse_ports(contents)
+def loads_ports(*ports, verbose=False):
+    ports = parse_ports('\n'.join(ports))
+
     if verbose:
         print(f'loaded {len(ports)} ports')
 
-    return ports
+    return ['.'.join(port) for port in ports]
 
 
 def load_ports_from_file(file, verbose=False):
-    contents = file.read()
-    ports = parse_ports(contents)
+    # TODO: check if file exists
+    ports = parse_ports(file.read())
     if verbose:
         print(f'loaded {len(ports)} ports')
 
-    return ports
+    return ['.'.join(port) for port in ports]
