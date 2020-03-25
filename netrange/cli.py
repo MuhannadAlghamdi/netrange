@@ -15,6 +15,7 @@ def create_parser():
     ip_parser.add_argument('--file', type=argparse.FileType())
     ip_parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
     ip_parser.add_argument('--range', action='store_true')
+    ip_parser.add_argument('--unrange', action='store_true')
 
     port_parser = subparser.add_parser('port')
     port_parser.add_argument('args', nargs='*')

@@ -13,12 +13,12 @@ def load_ips_from_file(file, verbose=False):
 
 
 def loads_ips(*ips, verbose=False):
-    ips = parse_ipaddrs(contents='\n'.join(ips))
+    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ips))
 
     if verbose:
-        print(f'loaded {len(ips)} ip addresses')
+        print(f'loaded {len(ipaddrs_tuples)} ip addresses')
 
-    return ['.'.join(ip) for ip in ips]
+    return ['.'.join(ipaddr) for ipaddr in ipaddrs_tuples]
 
 
 def loads_ports(*ports, verbose=False):

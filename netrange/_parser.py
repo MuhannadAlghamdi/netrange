@@ -23,7 +23,7 @@ def parse_ports(contents, unrange=False):
     return ports
 
 
-def parse_ipaddrs(contents, unrange=False):
+def parse_ipaddrs(contents):
     IP_REGEX = r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?'
     CIDR_REGEX = r'3[0-2]|[12]?[0-9]'
 
@@ -41,12 +41,8 @@ def parse_ipaddrs(contents, unrange=False):
     )
 
     ipaddrs = re.findall(pattern=r'\b%s\b' % regex, string=contents)
-    ipaddrs = _validate_ipaddrs(ipaddrs)
-
-    if unrange:
-        return [ipaddr for ipaddr in _unrange_ipaddrs(ipaddrs=ipaddrs)]
-
-    return [ipaddr for ipaddr in ipaddrs]
+    valid_ipaddrs = _validate_ipaddrs(ipaddrs)
+    return [ipaddr for ipaddr in valid_ipaddrs]
 
 
 def _range_ports(ports):
@@ -146,9 +142,11 @@ def get_ranged_ports(ports, verbose=False):
 
 
 def get_ranged_ipadds(ipaddrs, verbose=False):
-    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ipaddrs), unrange=True)
-    unduplicated_ipaddrs = list(set(ipaddrs_tuples))
-    duplicated_ipaddrs = len(ipaddrs_tuples) - len(unduplicated_ipaddrs)
+    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ipaddrs))
+    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs_tuples)
+    unduplicated_ipaddrs = list(set(unranged_ipaddrs))
+    duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
+
     if verbose:
         print(f'found { duplicated_ipaddrs } duplicated ip addresses')
 
