@@ -24,6 +24,7 @@ def parse_ports(contents, unrange=False):
 
 
 def parse_ipaddrs(contents):
+    # TODO: fix if ip is 001.03.000.099
     IP_REGEX = r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?'
     CIDR_REGEX = r'3[0-2]|[12]?[0-9]'
 
@@ -95,21 +96,27 @@ def _unrange_ipaddrs(ipaddrs):
 
 
 def _range_ipaddrs(ipaddrs):
-    ipaddrs = sorted(ipaddrs)
+    # ipaddrs = sorted(ipaddrs)
+    ipaddrs = sorted(ipaddrs, key=lambda ip: (
+        int(ip[0]),
+        int(ip[1]),
+        int(ip[2]),
+        int(ip[3])))
+
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
-        if next[3] - 1 == last[3]:
+        if int(next[3]) - 1 == int(last[3]):
             last = next
         else:
             if first == last:
-                yield '.'.join(map(str, first))
+                yield '.'.join(first)
             else:
-                yield '.'.join(map(str, first)) + '-' + str(last[3])
+                yield '.'.join(first + '-' + last[3])
             first = last = next
     if first == last:
-        yield '.'.join(map(str, first))
+        yield '.'.join(first)
     else:
-        yield '.'.join(map(str, first)) + '-' + str(last[3])
+        yield '.'.join(first + '-' + last[3])
 
 
 def separate_list(from_list, max_len):
@@ -147,11 +154,13 @@ def get_ranged_ipadds(ipaddrs, verbose=False):
     unduplicated_ipaddrs = list(set(unranged_ipaddrs))
     duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
 
+    print(unduplicated_ipaddrs)
+
     if verbose:
         print(f'found { duplicated_ipaddrs } duplicated ip addresses')
 
-    int_ipaddrs_tuples = [tuple(int(octet) for octet in list(ipaddr)) for ipaddr in unduplicated_ipaddrs]
-    for grouped_ipaddrs in _group_ipaddrs_by_octet(ipaddrs=int_ipaddrs_tuples, octet=3):
+    # int_ipaddrs_tuples = [tuple(int(octet) for octet in list(ipaddr)) for ipaddr in unduplicated_ipaddrs]
+    for grouped_ipaddrs in _group_ipaddrs_by_octet(ipaddrs=unduplicated_ipaddrs, octet=3):
         for ranged_ipaddrs in _range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs
 
@@ -167,7 +176,13 @@ def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
 
 
 def _group_ipaddrs_by_octet(ipaddrs, octet=3):
-    ipaddrs = sorted(ipaddrs)
+    # ipaddrs = sorted(ipaddrs)
+    ipaddrs = sorted(ipaddrs, key=lambda ip: (
+        int(ip[0]),
+        int(ip[1]),
+        int(ip[2]),
+        int(ip[3])))
+
     group = [ipaddrs[0]]
     for ipaddr in ipaddrs[1:]:
         if ipaddr[:octet] == group[-1][:octet]:

@@ -27,7 +27,7 @@ def loads_ports(*ports, verbose=False):
     if verbose:
         print(f'loaded {len(ports)} ports')
 
-    return ['.'.join(port) for port in ports]
+    return [port for port in ports]
 
 
 def load_ports_from_file(file, verbose=False):
