@@ -40,9 +40,10 @@ def parse_ipaddrs(contents):
         r')'  # forth octet end
     )
 
+    # return a list of tuples with string type
     ipaddrs = re.findall(pattern=r'\b%s\b' % regex, string=contents)
     valid_ipaddrs = _validate_ipaddrs(ipaddrs)
-    return [ipaddr for ipaddr in valid_ipaddrs]
+    return valid_ipaddrs
 
 
 def _range_ports(ports):
@@ -142,8 +143,7 @@ def get_ranged_ports(ports, verbose=False):
 
 
 def get_ranged_ipadds(ipaddrs, verbose=False):
-    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ipaddrs))
-    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs_tuples)
+    unranged_ipaddrs = list(_unrange_ipaddrs(ipaddrs))
     unduplicated_ipaddrs = list(set(unranged_ipaddrs))
     duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
 

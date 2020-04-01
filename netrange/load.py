@@ -18,7 +18,7 @@ def loads_ips(*ips, verbose=False):
     if verbose:
         print(f'loaded {len(ipaddrs_tuples)} ip addresses')
 
-    return ['.'.join(ipaddr) for ipaddr in ipaddrs_tuples]
+    return ipaddrs_tuples
 
 
 def loads_ports(*ports, verbose=False):
