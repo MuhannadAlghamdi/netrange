@@ -35,7 +35,7 @@ def parse_args(args):
         piped_stdin = args.stdin.read().splitlines() if not sys.stdin.isatty() else []
         from_file = netrange.load_ips_from_file(file=args.file, verbose=args.verbose) if args.file else []
         # ipaddrs = netrange.loads_ips(*list(stdin + piped_stdin + from_file), verbose=args.verbose)
-        ranged_ipaddrs = netrange.dumps_ips(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range)
+        ranged_ipaddrs = netrange.dumps_ips(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range, unrange=args.unrange)
         print(ranged_ipaddrs)
         exit(0)
     elif args.options == 'port':

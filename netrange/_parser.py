@@ -88,7 +88,7 @@ def _unrange_ipaddrs(ipaddrs):
     for ipaddr in ipaddrs:
         if '-' in ipaddr[3]:
             left, right = ipaddr[3].split('-')
-            if left < right:
+            if int(left) < int(right):
                 for i in range(int(left), int(right) + 1):
                     yield ipaddr[:3] + (str(i),)
         else:
@@ -96,7 +96,6 @@ def _unrange_ipaddrs(ipaddrs):
 
 
 def _range_ipaddrs(ipaddrs):
-    # ipaddrs = sorted(ipaddrs)
     ipaddrs = sorted(ipaddrs, key=lambda ip: (
         int(ip[0]),
         int(ip[1]),
@@ -105,28 +104,28 @@ def _range_ipaddrs(ipaddrs):
 
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
-        if int(next[3]) - 1 == int(last[3]):
+        if int(last[3]) + 1 == int(next[3]):
             last = next
         else:
             if first == last:
-                yield '.'.join(first)
+                yield first
             else:
-                yield '.'.join(first + '-' + last[3])
+                yield first[:3] + (first[3] + '-' + last[3],)
             first = last = next
     if first == last:
-        yield '.'.join(first)
+        yield first
     else:
-        yield '.'.join(first + '-' + last[3])
+        yield first[:3] + (first[3] + '-' + last[3],)
 
 
 def separate_list(from_list, max_len):
     list = []
     for range in from_list:
         if (_len_list(list) + len(range) + len(list)) <= max_len:
-            list.append(range)
+            list.append('.'.join(range))
         else:
             yield list
-            list = [range]
+            list = ['.'.join(range)]
     yield list
 
 
@@ -149,12 +148,31 @@ def get_ranged_ports(ports, verbose=False):
         yield ranged_ports
 
 
+def get_unranged_ipadds(ipaddrs, verbose=False):
+    unranged_ipaddrs = list(_unrange_ipaddrs(ipaddrs))
+    unduplicated_ipaddrs = list(set(unranged_ipaddrs))
+    duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
+    sorted_ipaddrs = sorted(unduplicated_ipaddrs, key=lambda ip: (
+        int(ip[0]),
+        int(ip[1]),
+        int(ip[2]),
+        int(ip[3])))
+
+    if verbose:
+        print(f'found { duplicated_ipaddrs } duplicated ip addresses')
+
+    return sorted_ipaddrs
+
+
 def get_ranged_ipadds(ipaddrs, verbose=False):
     unranged_ipaddrs = list(_unrange_ipaddrs(ipaddrs))
     unduplicated_ipaddrs = list(set(unranged_ipaddrs))
     duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
-
-    print(unduplicated_ipaddrs)
+    sorted_ipaddrs = sorted(unduplicated_ipaddrs, key=lambda ip: (
+        int(ip[0]),
+        int(ip[1]),
+        int(ip[2]),
+        int(ip[3])))
 
     if verbose:
         print(f'found { duplicated_ipaddrs } duplicated ip addresses')
@@ -176,7 +194,6 @@ def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
 
 
 def _group_ipaddrs_by_octet(ipaddrs, octet=3):
-    # ipaddrs = sorted(ipaddrs)
     ipaddrs = sorted(ipaddrs, key=lambda ip: (
         int(ip[0]),
         int(ip[1]),
