@@ -4,7 +4,6 @@ from ipaddress import IPv4Address
 
 def parse_ports(contents, unrange=False):
     PORT_REGEX = r'6553[1-5]?|655[1-2][0-9]|65[1-4][0-9]{2}|6[1-4][0-9]{3}|[1-5]?[0-9]{2,4}|[1-9]'
-
     regex = (
         r'('
         r'(?:(?:' + PORT_REGEX + r')(?![-]))'
@@ -13,18 +12,12 @@ def parse_ports(contents, unrange=False):
         r')'
     )
 
-    ports = re.findall(pattern=r'\b%s\b' % regex, string=contents)
-    ports = _validate_ports(ports)
-
-    if unrange:
-        # TODO: create unrange finc for ports
-        pass
-
-    return ports
+    ports = re.findall(pattern=r'(?:(?<=\s)|(?<=\,)|(?<=^))%s(?=\s|\,|$)' % regex, string=contents)
+    valid_ports = _validate_ports(ports)
+    return valid_ports
 
 
 def parse_ipaddrs(contents):
-    # TODO: fix if ip is 001.03.000.099
     IP_REGEX = r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?'
     CIDR_REGEX = r'3[0-2]|[12]?[0-9]'
 
@@ -42,7 +35,7 @@ def parse_ipaddrs(contents):
     )
 
     # return a list of tuples with string type
-    ipaddrs = re.findall(pattern=r'\b%s\b' % regex, string=contents)
+    ipaddrs = re.findall(pattern=r'(?:(?<=\s)|(?<=\,)|(?<=^))%s(?=\s|\,|$)' % regex, string=contents)
     valid_ipaddrs = _validate_ipaddrs(ipaddrs)
     return valid_ipaddrs
 
@@ -62,6 +55,17 @@ def _range_ports(ports):
         yield first
     else:
         yield first + '-' + last
+
+
+def _unrange_ports(ports):
+    for port in ports:
+        if '-' in port:
+            left, right = port.split('-')
+            if int(left) < int(right):
+                for i in range(int(left), int(right) + 1):
+                    yield str(i)
+        else:
+            yield port
 
 
 def _validate_ipaddrs(ipaddrs):
@@ -137,13 +141,29 @@ def _len_list(list):
     return max
 
 
-def get_ranged_ports(ports, verbose=False):
-    unduplicated_ports = list(set(ports))
-    duplicated_ports = len(ports) - len(unduplicated_ports)
+def get_unranged_ports(ports, verbose=False):
+    unranged_ports = list(_unrange_ports(ports))
+    unduplicated_ports = list(set(unranged_ports))
+    duplicated_ports = len(unranged_ports) - len(unduplicated_ports)
+    sorted_ports = sorted(unduplicated_ports, key=int)
+
     if verbose:
         print(f'found { duplicated_ports } duplicated ports')
 
-    sorted_ports = sorted(unduplicated_ports, key=int)
+    return sorted_ports
+
+
+def get_ranged_ports(ports, verbose=False):
+    unranged_ports = list(_unrange_ports(ports))
+    unduplicated_ports = list(set(unranged_ports))
+    duplicated_ports = len(unranged_ports) - len(unduplicated_ports)
+    sorted_ports = sorted(unduplicated_ports, key=lambda port: (
+        int(port.split('-')[0] if '-' in port else port),
+        int(port.split('-')[1] if '-' in port else port)))
+
+    if verbose:
+        print(f'found { duplicated_ports } duplicated ports')
+
     for ranged_ports in _range_ports(ports=sorted_ports):
         yield ranged_ports
 

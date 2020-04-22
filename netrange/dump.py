@@ -2,7 +2,9 @@ from netrange._parser import separate_list
 from netrange._parser import get_ranged_ports
 from netrange._parser import get_ranged_ipadds
 from netrange._parser import get_unranged_ipadds
+from netrange._parser import get_unranged_ports
 from netrange._parser import parse_ipaddrs
+from netrange._parser import parse_ports
 
 
 def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
@@ -39,13 +41,17 @@ def dump_ips(ipaddrs, max_len=None, verbose=False, range=False):
     return [ipaddr for ipaddr in ipaddrs]
 
 
-def dumps_ports(ports, max_len=None, verbose=False, range=False, delimiter='\n'):
-    ports = sorted(ports)
+def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
+    ports = parse_ports(contents='\n'.join(ports))
+    ports = sorted(ports, key=lambda port: (
+        int(port.split('-')[0] if '-' in port else port),
+        int(port.split('-')[1] if '-' in port else port)))
 
     if range:
         ports = get_ranged_ports(ports=ports, verbose=verbose)
+    elif unrange:
+        ports = get_unranged_ports(ports=ports, verbose=verbose)
 
-    # TODO: verify ports contains at least one port
     if max_len is not None:
         separated_ports = separate_list(from_list=ports, max_len=max_len)
         return delimiter.join([','.join(ports) for ports in separated_ports])
