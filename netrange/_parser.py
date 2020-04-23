@@ -12,7 +12,7 @@ def parse_ports(contents, unrange=False):
         r')'
     )
 
-    ports = re.findall(pattern=r'(?:(?<=\s)|(?<=\,)|(?<=^))%s(?=\s|\,|$)' % regex, string=contents)
+    ports = re.findall(pattern=r'\b(?<!\.)%s(?!\.)\b' % regex, string=contents)
     valid_ports = _validate_ports(ports)
     return valid_ports
 
@@ -35,7 +35,7 @@ def parse_ipaddrs(contents):
     )
 
     # return a list of tuples with string type
-    ipaddrs = re.findall(pattern=r'(?:(?<=\s)|(?<=\,)|(?<=^))%s(?=\s|\,|$)' % regex, string=contents)
+    ipaddrs = re.findall(pattern=r'\b(?<!\.)%s(?!\.)\b' % regex, string=contents)
     valid_ipaddrs = _validate_ipaddrs(ipaddrs)
     return valid_ipaddrs
 
@@ -142,65 +142,41 @@ def _len_list(list):
 
 
 def get_unranged_ports(ports, verbose=False):
-    unranged_ports = list(_unrange_ports(ports))
-    unduplicated_ports = list(set(unranged_ports))
-    duplicated_ports = len(unranged_ports) - len(unduplicated_ports)
-    sorted_ports = sorted(unduplicated_ports, key=int)
-
-    if verbose:
-        print(f'found { duplicated_ports } duplicated ports')
-
+    unranged_ports = _unrange_ports(ports)
+    sorted_ports = sorted(set(unranged_ports), key=int)
     return sorted_ports
 
 
 def get_ranged_ports(ports, verbose=False):
-    unranged_ports = list(_unrange_ports(ports))
-    unduplicated_ports = list(set(unranged_ports))
-    duplicated_ports = len(unranged_ports) - len(unduplicated_ports)
-    sorted_ports = sorted(unduplicated_ports, key=lambda port: (
-        int(port.split('-')[0] if '-' in port else port),
-        int(port.split('-')[1] if '-' in port else port)))
-
-    if verbose:
-        print(f'found { duplicated_ports } duplicated ports')
-
+    unranged_ports = _unrange_ports(ports)
+    sorted_ports = sorted(set(unranged_ports), key=int)
     for ranged_ports in _range_ports(ports=sorted_ports):
         yield ranged_ports
 
 
 def get_unranged_ipadds(ipaddrs, verbose=False):
-    unranged_ipaddrs = list(_unrange_ipaddrs(ipaddrs))
-    unduplicated_ipaddrs = list(set(unranged_ipaddrs))
-    duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
-    sorted_ipaddrs = sorted(unduplicated_ipaddrs, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2]),
-        int(ip[3])))
-
-    if verbose:
-        print(f'found { duplicated_ipaddrs } duplicated ip addresses')
-
+    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs)
+    sorted_ipaddrs = sorted(set(unranged_ipaddrs), key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
     return sorted_ipaddrs
 
 
 def get_ranged_ipadds(ipaddrs, verbose=False):
-    unranged_ipaddrs = list(_unrange_ipaddrs(ipaddrs))
-    unduplicated_ipaddrs = list(set(unranged_ipaddrs))
-    duplicated_ipaddrs = len(unranged_ipaddrs) - len(unduplicated_ipaddrs)
-    sorted_ipaddrs = sorted(unduplicated_ipaddrs, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2]),
-        int(ip[3])))
-
-    if verbose:
-        print(f'found { duplicated_ipaddrs } duplicated ip addresses')
-
-    # int_ipaddrs_tuples = [tuple(int(octet) for octet in list(ipaddr)) for ipaddr in unduplicated_ipaddrs]
-    for grouped_ipaddrs in _group_ipaddrs_by_octet(ipaddrs=unduplicated_ipaddrs, octet=3):
+    unranged_ipaddrs = _unrange_ipaddrs(ipaddrs)
+    sorted_ipaddrs = sorted(set(unranged_ipaddrs), key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
+    for grouped_ipaddrs in _group_ipaddrs_by_octet(ipaddrs=sorted_ipaddrs, octet=3):
         for ranged_ipaddrs in _range_ipaddrs(ipaddrs=grouped_ipaddrs):
             yield ranged_ipaddrs
+
+
+def get_cidr_block(ipaddrs):
+    groups = _group_ipaddrs_by_octet_slow(ipaddrs).keys()
+    sorted_groups = sorted(groups, key=lambda ip: (
+        int(ip[0]),
+        int(ip[1]),
+        int(ip[2])))
+
+    for group in sorted_groups:
+        yield group + ('0/24',)
 
 
 def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
@@ -214,12 +190,6 @@ def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
 
 
 def _group_ipaddrs_by_octet(ipaddrs, octet=3):
-    ipaddrs = sorted(ipaddrs, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2]),
-        int(ip[3])))
-
     group = [ipaddrs[0]]
     for ipaddr in ipaddrs[1:]:
         if ipaddr[:octet] == group[-1][:octet]:

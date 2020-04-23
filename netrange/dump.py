@@ -3,23 +3,27 @@ from netrange._parser import get_ranged_ports
 from netrange._parser import get_ranged_ipadds
 from netrange._parser import get_unranged_ipadds
 from netrange._parser import get_unranged_ports
+from netrange._parser import get_cidr_block
 from netrange._parser import parse_ipaddrs
 from netrange._parser import parse_ports
 
 
-def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
+def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False):
     ipaddrs = parse_ipaddrs(contents='\n'.join(ips))
-    ipaddrs = sorted(ipaddrs, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2]),
-        int(ip[3].split('-')[0] if '-' in ip[3] else ip[3]),
-        int(ip[3].split('-')[1]) if '-' in ip[3] else 0))
 
     if range:
         ipaddrs = get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
     elif unrange:
         ipaddrs = get_unranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+    elif cidr:
+        ipaddrs = get_cidr_block(ipaddrs)
+    else:
+        ipaddrs = sorted(set(ipaddrs), key=lambda ip: (
+            int(ip[0]),
+            int(ip[1]),
+            int(ip[2]),
+            int(ip[3].split('-')[0] if '-' in ip[3] else ip[3]),
+            int(ip[3].split('-')[1]) if '-' in ip[3] else 0))
 
     if max_len:
         separated_ipaddrs = separate_list(from_list=ipaddrs, max_len=max_len)
@@ -43,14 +47,15 @@ def dump_ips(ipaddrs, max_len=None, verbose=False, range=False):
 
 def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
     ports = parse_ports(contents='\n'.join(ports))
-    ports = sorted(ports, key=lambda port: (
-        int(port.split('-')[0] if '-' in port else port),
-        int(port.split('-')[1] if '-' in port else port)))
 
     if range:
         ports = get_ranged_ports(ports=ports, verbose=verbose)
     elif unrange:
         ports = get_unranged_ports(ports=ports, verbose=verbose)
+    else:
+        ports = sorted(ports, key=lambda port: (
+            int(port.split('-')[0] if '-' in port else port),
+            int(port.split('-')[1] if '-' in port else port)))
 
     if max_len is not None:
         separated_ports = separate_list(from_list=ports, max_len=max_len)
