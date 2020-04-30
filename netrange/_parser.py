@@ -21,21 +21,35 @@ def parse_ipaddrs(contents):
     IP_REGEX = r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?'
     CIDR_REGEX = r'3[0-2]|[12]?[0-9]'
 
-    regex = (
-        r'(' + IP_REGEX + r')\.'  # first octet
-        r'(' + IP_REGEX + r')\.'  # second octet
-        r'(' + IP_REGEX + r')\.'  # third octet
-        r'('  # forth octet begin
-        r'(?:(?:' + IP_REGEX + r')(?![-/]))'                    # if ends with with on - or /
+    FULL_IPADDRS_REGEX = (
+        r'\b'                                                   # open boundry
+        r'(' + IP_REGEX + r')\.'                                # first octet
+        r'(' + IP_REGEX + r')\.'                                # second octet
+        r'(' + IP_REGEX + r')\.'                                # third octet
+        r'('                                                    # forth octet begin
+        r'(?:'
+        r'(?:'
+        r'(?:(?:' + IP_REGEX + r')(?![-\/]))'                    # if ends with with on - or /
         r'|'
         r'(?:(?:' + IP_REGEX + r')\-(?:' + IP_REGEX + r'))'     # if ends with - and octet
         r'|'
         r'(?:(?:' + IP_REGEX + r')\/(?:' + CIDR_REGEX + r'))'   # if ends with / and cidr
-        r')'  # forth octet end
+        r')'
+        r'\;'
+        r')*'
+        r'(?:'
+        r'(?:(?:' + IP_REGEX + r')(?![-\/]))'                    # if ends with with on - or /
+        r'|'
+        r'(?:(?:' + IP_REGEX + r')\-(?:' + IP_REGEX + r'))'     # if ends with - and octet
+        r'|'
+        r'(?:(?:' + IP_REGEX + r')\/(?:' + CIDR_REGEX + r'))'   # if ends with / and cidr
+        r')'
+        r')'                                                    # forth octet end
+        r'(?=\s|\,|$)'                                          # close boundry
     )
 
     # return a list of tuples with string type
-    ipaddrs = re.findall(pattern=r'\b(?<!\.)%s(?!\.)\b' % regex, string=contents)
+    ipaddrs = re.findall(pattern=FULL_IPADDRS_REGEX, string=contents)
     valid_ipaddrs = _validate_ipaddrs(ipaddrs)
     return valid_ipaddrs
 
@@ -70,12 +84,15 @@ def _unrange_ports(ports):
 
 def _validate_ipaddrs(ipaddrs):
     for ipaddr in ipaddrs:
-        if '-' in ipaddr[3]:
-            left, right = ipaddr[3].split('-')
-            if int(left) < int(right):
+        for part in ipaddr[3].split(';'):
+            if '-' in part:
+                left, right = part.split('-')
+                if int(left) < int(right):
+                    yield ipaddr
+            if '/' in part:
                 yield ipaddr
-        else:
-            yield ipaddr
+            else:
+                yield ipaddr
 
 
 def _validate_ports(ports):

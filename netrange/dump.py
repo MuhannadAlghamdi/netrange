@@ -8,6 +8,19 @@ from netrange._parser import parse_ipaddrs
 from netrange._parser import parse_ports
 
 
+def sort_ipaddrs(ip):
+    first_part = ip[3].split(';')[0]
+    if '-' in first_part:
+        left, right = first_part.split('-')
+        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right))
+    elif '/' in first_part:
+        left, right = first_part.split('/')
+        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right))
+    else:
+        left = first_part
+        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), 0)
+
+
 def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False):
     ipaddrs = parse_ipaddrs(contents='\n'.join(ips))
 
@@ -18,12 +31,7 @@ def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', un
     elif cidr:
         ipaddrs = get_cidr_block(ipaddrs)
     else:
-        ipaddrs = sorted(set(ipaddrs), key=lambda ip: (
-            int(ip[0]),
-            int(ip[1]),
-            int(ip[2]),
-            int(ip[3].split('-')[0] if '-' in ip[3] else ip[3]),
-            int(ip[3].split('-')[1]) if '-' in ip[3] else 0))
+        ipaddrs = sorted(set(ipaddrs), key=sort_ipaddrs)
 
     if max_len:
         separated_ipaddrs = separate_list(from_list=ipaddrs, max_len=max_len)
