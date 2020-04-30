@@ -107,22 +107,20 @@ def _validate_ports(ports):
 
 def _unrange_ipaddrs(ipaddrs):
     for ipaddr in ipaddrs:
-        if '-' in ipaddr[3]:
-            left, right = ipaddr[3].split('-')
-            if int(left) < int(right):
-                for i in range(int(left), int(right) + 1):
-                    yield ipaddr[:3] + (str(i),)
-        else:
-            yield ipaddr
+        for part in ipaddr[3].split(';'):
+            if '-' in part:
+                left, right = part.split('-')
+                if int(left) < int(right):
+                    for i in range(int(left), int(right) + 1):
+                        yield ipaddr[:3] + (str(i),)
+            elif '/' in part:
+                pass
+            else:
+                yield ipaddr[:3] + (part,)
 
 
 def _range_ipaddrs(ipaddrs):
-    ipaddrs = sorted(ipaddrs, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2]),
-        int(ip[3])))
-
+    ipaddrs = sorted(ipaddrs, key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
     first = last = ipaddrs[0]
     for next in ipaddrs[1:]:
         if int(last[3]) + 1 == int(next[3]):
@@ -187,21 +185,17 @@ def get_ranged_ipadds(ipaddrs, verbose=False):
 
 def get_cidr_block(ipaddrs):
     groups = _group_ipaddrs_by_octet_slow(ipaddrs).keys()
-    sorted_groups = sorted(groups, key=lambda ip: (
-        int(ip[0]),
-        int(ip[1]),
-        int(ip[2])))
-
+    sorted_groups = sorted(groups, key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2])))
     for group in sorted_groups:
         yield group + ('0/24',)
 
 
 def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
     groups = {}
-    for ip in ipaddrs:
-        if ip[:octet] not in groups:
-            groups[ip[:octet]] = []
-        groups[ip[:octet]].append(ip[3])
+    for ipaddr in ipaddrs:
+        if ipaddr[:octet] not in groups:
+            groups[ipaddr[:octet]] = []
+        groups[ipaddr[:octet]].append(ipaddr[3])
 
     return groups
 
@@ -215,3 +209,8 @@ def _group_ipaddrs_by_octet(ipaddrs, octet=3):
             yield group
             group = [ipaddr]
     yield group
+
+
+def shorten(ipaddrs):
+    for group, ipaddrs in _group_ipaddrs_by_octet_slow(ipaddrs).items():
+        yield group + (';'.join(ipaddrs),)

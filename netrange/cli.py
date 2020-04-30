@@ -12,6 +12,7 @@ def create_parser():
     parser.add_argument('--file', type=argparse.FileType())
     parser.add_argument('--max', nargs='?', const=1, type=int, default=None)
     parser.add_argument('-d', '--delimiter', default='\n')
+    parser.add_argument('--shorter', action='store_true')
     primary_group = parser.add_mutually_exclusive_group(required=True)
     primary_group.add_argument('--ip', action='store_true')
     primary_group.add_argument('--port', action='store_true')
@@ -30,7 +31,7 @@ def parse_args(args):
     from_file = args.file.read() if args.file else []
 
     if args.ip:
-        ranged_ipaddrs = netrange.dumps_ips(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range, cidr=args.cidr, unrange=args.unrange, delimiter=args.delimiter)
+        ranged_ipaddrs = netrange.dumps_ips(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range, cidr=args.cidr, unrange=args.unrange, delimiter=args.delimiter, shorter=args.shorter)
         print(ranged_ipaddrs)
     elif args.port:
         ranged_ports = netrange.dumps_ports(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range, unrange=args.unrange, delimiter=args.delimiter)

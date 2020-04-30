@@ -6,6 +6,7 @@ from netrange._parser import get_unranged_ports
 from netrange._parser import get_cidr_block
 from netrange._parser import parse_ipaddrs
 from netrange._parser import parse_ports
+from netrange._parser import shorten
 
 
 def sort_ipaddrs(ip):
@@ -21,13 +22,17 @@ def sort_ipaddrs(ip):
         return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), 0)
 
 
-def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False):
+def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False, shorter=False):
     ipaddrs = parse_ipaddrs(contents='\n'.join(ips))
 
     if range:
         ipaddrs = get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+        if shorter:
+            ipaddrs = shorten(ipaddrs)
     elif unrange:
         ipaddrs = get_unranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+        if shorter:
+            ipaddrs = shorten(ipaddrs)
     elif cidr:
         ipaddrs = get_cidr_block(ipaddrs)
     else:
