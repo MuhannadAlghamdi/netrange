@@ -1,10 +1,10 @@
 from netrange._parser import parse_ports
-from netrange._parser import parse_ipaddrs
+from netrange._parser import parse_ips
 
 
 def load_ips_from_file(file, verbose=False):
     # TODO: check if file exists
-    ips = parse_ipaddrs(contents=file.read())
+    ips = parse_ips(contents=file.read())
 
     if verbose:
         print(f'loaded {len(ips)} ip addresses')
@@ -13,7 +13,7 @@ def load_ips_from_file(file, verbose=False):
 
 
 def loads_ips(*ips, verbose=False):
-    ipaddrs_tuples = parse_ipaddrs(contents='\n'.join(ips))
+    ipaddrs_tuples = parse_ips(contents='\n'.join(ips))
 
     if verbose:
         print(f'loaded {len(ipaddrs_tuples)} ip addresses')

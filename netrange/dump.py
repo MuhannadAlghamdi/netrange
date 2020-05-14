@@ -1,61 +1,61 @@
-from netrange._parser import separate_list
-from netrange._parser import get_ranged_ports
-from netrange._parser import get_ranged_ipadds
-from netrange._parser import get_unranged_ipadds
-from netrange._parser import get_unranged_ports
-from netrange._parser import get_cidr_block
-from netrange._parser import parse_ipaddrs
-from netrange._parser import parse_ports
 from netrange._parser import shorten
+from netrange._parser import parse_ips
+from netrange._parser import parse_ports
+from netrange._parser import separate_list
+from netrange._parser import get_cidr_block
+from netrange._parser import get_ranged_ports
+from netrange._parser import get_ranged_ips
+from netrange._parser import get_unranged_ports
+from netrange._parser import get_unranged_ipadds
 
 
-def sort_ipaddrs(ip):
+def sort_ips(ip):
     first_part = ip[3].split(';')[0]
     if '-' in first_part:
         left, right = first_part.split('-')
-        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right))
+        return int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right)
     elif '/' in first_part:
         left, right = first_part.split('/')
-        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right))
+        return int(ip[0]), int(ip[1]), int(ip[2]), int(left), int(right)
     else:
         left = first_part
-        return (int(ip[0]), int(ip[1]), int(ip[2]), int(left), 0)
+        return int(ip[0]), int(ip[1]), int(ip[2]), int(left), 0
 
 
 def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False, shorter=False):
-    ipaddrs = parse_ipaddrs(contents='\n'.join(ips))
+    ips = parse_ips(contents='\n'.join(ips))
 
     if range:
-        ipaddrs = get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+        ips = get_ranged_ips(ips=ips, verbose=verbose)
         if shorter:
-            ipaddrs = shorten(ipaddrs)
+            ips = shorten(ips)
     elif unrange:
-        ipaddrs = get_unranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+        ips = get_unranged_ipadds(ipaddrs=ips, verbose=verbose)
         if shorter:
-            ipaddrs = shorten(ipaddrs)
+            ips = shorten(ips)
     elif cidr:
-        ipaddrs = get_cidr_block(ipaddrs)
+        ips = get_cidr_block(ips)
     else:
-        ipaddrs = sorted(set(ipaddrs), key=sort_ipaddrs)
+        ips = sorted(set(ips), key=sort_ips)
 
     if max_len:
-        separated_ipaddrs = separate_list(from_list=ipaddrs, max_len=max_len)
-        return delimiter.join([','.join(ipaddrs) for ipaddrs in separated_ipaddrs])
+        separated_ips = separate_list(from_list=ips, max_len=max_len)
+        return delimiter.join([','.join(ipaddrs) for ipaddrs in separated_ips])
 
-    return delimiter.join(['.'.join(ipaddr) for ipaddr in ipaddrs])
+    return delimiter.join(['.'.join(ip) for ip in ips])
 
 
-def dump_ips(ipaddrs, max_len=None, verbose=False, range=False):
-    ipaddrs = sorted(ipaddrs)
+def dump_ips(ips, max_len=None, verbose=False, range=False):
+    ips = sorted(ips)
 
     if range:
-        ipaddrs = get_ranged_ipadds(ipaddrs=ipaddrs, verbose=verbose)
+        ips = get_ranged_ips(ips=ips, verbose=verbose)
 
     if max_len is not None:
-        separated_ipaddrs = separate_list(from_list=ipaddrs, max_len=max_len)
-        return [','.join(ipaddrs) for ipaddrs in separated_ipaddrs]
+        separated_ips = separate_list(from_list=ips, max_len=max_len)
+        return [','.join(ipaddrs) for ipaddrs in separated_ips]
 
-    return [ipaddr for ipaddr in ipaddrs]
+    return [ipaddr for ipaddr in ips]
 
 
 def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
