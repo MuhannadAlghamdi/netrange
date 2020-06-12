@@ -22,31 +22,31 @@ def parse_ips(contents):
     cidr_regex = r'3[0-2]|[12]?[0-9]'
 
     full_ips_regex = (
-        r'\b'                                                   # open boundary
         r'(' + ip_regex + r')\.'                                # first octet
         r'(' + ip_regex + r')\.'                                # second octet
         r'(' + ip_regex + r')\.'                                # third octet
         r'('                                                    # forth octet begin
         r'(?:'
         r'(?:'
-        r'(?:(?:' + ip_regex + r')(?![-\/]))'                    # if ends with with on - or /
+        r'(?:(?:' + ip_regex + r')\/(?:' + cidr_regex + r'))'   # if ends with / and cidr
         r'|'
         r'(?:(?:' + ip_regex + r')\-(?:' + ip_regex + r'))'     # if ends with - and octet
         r'|'
-        r'(?:(?:' + ip_regex + r')\/(?:' + cidr_regex + r'))'   # if ends with / and cidr
+        r'(?:(?:' + ip_regex + r')(?![-\/]))'                    # if ends with with on - or /
         r')'
         r'\;'
         r')*'
         r'(?:'
-        r'(?:(?:' + ip_regex + r')(?![-\/]))'                    # if ends with with on - or /
+        r'(?:(?:' + ip_regex + r')\/(?:' + cidr_regex + r'))'   # if ends with / and cidr
         r'|'
         r'(?:(?:' + ip_regex + r')\-(?:' + ip_regex + r'))'     # if ends with - and octet
         r'|'
-        r'(?:(?:' + ip_regex + r')\/(?:' + cidr_regex + r'))'   # if ends with / and cidr
+        r'(?:(?:' + ip_regex + r')(?![-\/]))'                    # if ends with with on - or /
         r')'
         r')'                                                    # forth octet end
-        r'(?=\s|\,|$)'                                          # close boundary
     )
+
+    print(full_ips_regex)
 
     # return a list of tuples with string type
     ips = re.findall(pattern=full_ips_regex, string=contents)
