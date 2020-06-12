@@ -45,17 +45,23 @@ def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', un
     return delimiter.join(['.'.join(ip) for ip in ips])
 
 
-def dump_ips(ips, max_len=None, verbose=False, range=False):
-    ips = sorted(ips)
+def dump_ips(*ips, verbose=False, range=False, unrange=False, cidr=False, shorter=False):
+    ips = parse_ips(contents='\n'.join(ips))
 
     if range:
         ips = get_ranged_ips(ips=ips, verbose=verbose)
+        if shorter:
+            ips = shorten(ips)
+    elif unrange:
+        ips = get_unranged_ipadds(ipaddrs=ips, verbose=verbose)
+        if shorter:
+            ips = shorten(ips)
+    elif cidr:
+        ips = get_cidr_block(ips)
+    else:
+        ips = sorted(set(ips), key=sort_ips)
 
-    if max_len is not None:
-        separated_ips = separate_list(from_list=ips, max_len=max_len)
-        return [','.join(ipaddrs) for ipaddrs in separated_ips]
-
-    return [ipaddr for ipaddr in ips]
+    return ['.'.join(ip) for ip in ips]
 
 
 def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
