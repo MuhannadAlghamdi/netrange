@@ -46,20 +46,22 @@ def parse_ips(contents):
         r')'                                                    # forth octet end
     )
 
-    print(full_ips_regex)
-
     # return a list of tuples with string type
     ips = re.findall(pattern=full_ips_regex, string=contents)
     valid_ips = _validate_ips(ips)
     return valid_ips
 
 
-def _range_ports(ports):
+def _range_ports(ports, step=1):
     first_port = last_port = ports[0]
     for next_port in ports[1:]:
-        if int(next_port) - 1 == int(last_port):
-            last_port = next_port
-        else:
+        found = False
+        for index in range(1, step + 1):
+            if int(next_port) - index == int(last_port):
+                found = True
+                last_port = next_port
+                break
+        if not found:
             if first_port == last_port:
                 yield first_port
             else:
@@ -154,6 +156,17 @@ def separate_list(from_list, max_len):
             list = ['.'.join(range)]
     yield list
 
+# TODO: check if max_len is less than range length
+def separate_ports(from_list, max_len):
+    list = []
+    for range in from_list:
+        if (_len_list(list) + len(range) + len(list)) <= max_len:
+            list.append(range)
+        else:
+            yield list
+            list = [range]
+    yield list
+
 
 def _len_list(list):
     max = 0
@@ -169,10 +182,10 @@ def get_unranged_ports(ports, verbose=False):
     return sorted_ports
 
 
-def get_ranged_ports(ports, verbose=False):
+def get_ranged_ports(ports, verbose=False, step=1):
     unranged_ports = _unrange_ports(ports)
     sorted_ports = sorted(set(unranged_ports), key=int)
-    for ranged_ports in _range_ports(ports=sorted_ports):
+    for ranged_ports in _range_ports(ports=sorted_ports, step=step):
         yield ranged_ports
 
 

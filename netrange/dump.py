@@ -2,6 +2,7 @@ from netrange._parser import shorten
 from netrange._parser import parse_ips
 from netrange._parser import parse_ports
 from netrange._parser import separate_list
+from netrange._parser import separate_ports
 from netrange._parser import get_cidr_block
 from netrange._parser import get_ranged_ports
 from netrange._parser import get_ranged_ips
@@ -64,11 +65,11 @@ def dump_ips(*ips, verbose=False, range=False, unrange=False, cidr=False, shorte
     return ['.'.join(ip) for ip in ips]
 
 
-def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False):
+def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, step=1):
     ports = parse_ports(contents='\n'.join(ports))
 
     if range:
-        ports = get_ranged_ports(ports=ports, verbose=verbose)
+        ports = get_ranged_ports(ports=ports, verbose=verbose, step=step)
     elif unrange:
         ports = get_unranged_ports(ports=ports, verbose=verbose)
     else:
@@ -77,8 +78,8 @@ def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n'
             int(port.split('-')[1] if '-' in port else port)))
 
     if max_len is not None:
-        separated_ports = separate_list(from_list=ports, max_len=max_len)
-        return delimiter.join([','.join(ports) for ports in separated_ports])
+        separated_ports = separate_ports(from_list=ports, max_len=max_len)
+        return '\n'.join([delimiter.join(ports) for ports in separated_ports])
 
     return delimiter.join([port for port in ports])
 
