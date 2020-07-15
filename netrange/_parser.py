@@ -1,5 +1,6 @@
 import re
 from ipaddress import IPv4Address
+from netrange.exceptions import NetrangeParserError
 
 
 def parse_ports(contents, unrange=False):
@@ -86,7 +87,7 @@ def _unrange_ports(ports):
 
 def _validate_ips(ips):
     if not ips:
-        raise Exception('No IP found.')
+        raise NetrangeParserError('No IP found.')
 
     for ip in ips:
         for part in ip[3].split(';'):
@@ -102,7 +103,7 @@ def _validate_ips(ips):
 
 def _validate_ports(ports):
     if not ports:
-        raise Exception('No port found.')
+        raise NetrangeParserError('No port found.')
 
     for port in ports:
         if '-' in port:

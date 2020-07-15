@@ -1,14 +1,22 @@
 import sys
 
 from netrange.cli import parse_args
+from netrange.exceptions import NetrangeException
 
 
 def main():
     try:
-        return parse_args(sys.argv[1:])
-    except Exception as exc:
-        return '{}: {}'.format(exc.__class__.__name__, exc.args[0])
+        parse_args(sys.argv[1:])
+        exit(0)
+    except NetrangeException as e:
+        message = '{}: {}'.format(e.__class__.__name__, e.args[0])
+        print(message)
+        sys.exit(2)
+    except Exception as e:
+        message = '{}: {}'.format(e.__class__.__name__, e.args[0])
+        print(message)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

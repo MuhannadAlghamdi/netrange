@@ -37,5 +37,3 @@ def parse_args(args):
     elif args.port:
         ranged_ports = netrange.dumps_ports(*list(stdin + piped_stdin + from_file), max_len=args.max, verbose=args.verbose, range=args.range, unrange=args.unrange, delimiter=args.delimiter, step=args.step)
         print(ranged_ports)
-
-    exit(0)
