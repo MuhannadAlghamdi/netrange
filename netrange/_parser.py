@@ -1,5 +1,8 @@
 import re
+
 from ipaddress import IPv4Address
+from ipaddress import ip_network
+
 from netrange.exceptions import NetrangeParserError
 
 
@@ -96,7 +99,11 @@ def _validate_ips(ips):
                 if int(left) < int(right):
                     yield ip
             elif '/' in part:
-                yield ip
+                try:
+                    network = ip_network(address='.'.join(ip))
+                    yield ip
+                except Exception as e:
+                    pass
             else:
                 yield ip
 
@@ -123,7 +130,9 @@ def _unrange_ips(ips):
                     for i in range(int(left), int(right) + 1):
                         yield ip[:3] + (str(i),)
             elif '/' in part:
-                pass
+                network = ip_network(address='.'.join(ip))
+                for host in network.hosts():
+                    yield tuple(str(host).split('.'))
             else:
                 yield ip[:3] + (part,)
 
@@ -156,6 +165,7 @@ def separate_list(from_list, max_len):
             yield list
             list = ['.'.join(range)]
     yield list
+
 
 # TODO: check if max_len is less than range length
 def separate_ports(from_list, max_len):
