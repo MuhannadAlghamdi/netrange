@@ -8,7 +8,7 @@ from netrange.load import load_ports_from_file
 from netrange.load import loads_ips
 from netrange.load import loads_ports
 
-__version__ = '0.0.15'
+__version__ = '0.0.16'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
     '__version__',
