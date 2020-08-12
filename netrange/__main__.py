@@ -6,7 +6,8 @@ from netrange.exceptions import NetrangeException
 
 def main():
     try:
-        parse_args(sys.argv[1:])
+        output = parse_args(sys.argv[1:])
+        print(output)
         exit(0)
     except NetrangeException as e:
         message = '{}: {}'.format(e.__class__.__name__, e.args[0])
