@@ -6,7 +6,7 @@ from ipaddress import ip_network
 from netrange.exceptions import NetrangeParserError
 
 
-def parse_ports(contents, unrange=False):
+def parse_ports(contents):
     port_regex = r'6553[1-5]?|655[1-2][0-9]|65[1-4][0-9]{2}|6[1-4][0-9]{3}|[1-5]?[0-9]{2,4}|[1-9]'
     regex = (
         r'('
@@ -16,7 +16,8 @@ def parse_ports(contents, unrange=False):
         r')'
     )
 
-    ports = re.findall(pattern=r'\b(?<!\.)%s(?!\.)\b' % regex, string=contents)
+    contents_str = _convert_contents_to_str(contents)
+    ports = re.findall(pattern=r'\b(?<!\.)%s(?!\.)\b' % regex, string=contents_str)
     valid_ports = _validate_ports(ports)
     return valid_ports
 
@@ -50,8 +51,9 @@ def parse_ips(contents):
         r')'                                                    # forth octet end
     )
 
+    contents_str = _convert_contents_to_str(contents)
     # return a list of tuples with string type
-    ips = re.findall(pattern=full_ips_regex, string=contents)
+    ips = re.findall(pattern=full_ips_regex, string=contents_str)
     valid_ips = _validate_ips(ips)
     return valid_ips
 
@@ -245,3 +247,14 @@ def _group_ipaddrs_by_octet(ipaddrs, octet=3):
 def shorten(ipaddrs):
     for group, ipaddrs in _group_ipaddrs_by_octet_slow(ipaddrs).items():
         yield group + (';'.join(ipaddrs),)
+
+
+def _convert_contents_to_str(contents):
+    if isinstance(contents, str):
+        return contents
+    elif isinstance(contents, list):
+        return '\n'.join(contents)
+    elif isinstance(contents, tuple):
+        return '\n'.join(contents)
+    else:
+        raise NetrangeParserError('Unknown parser type.')

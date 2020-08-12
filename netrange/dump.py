@@ -24,7 +24,7 @@ def sort_ips(ip):
 
 
 def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, cidr=False, shorter=False):
-    ips = parse_ips(contents='\n'.join(ips))
+    ips = parse_ips(ips)
 
     if range:
         ips = get_ranged_ips(ips=ips, verbose=verbose)
@@ -47,7 +47,7 @@ def dumps_ips(*ips, max_len=None, verbose=False, range=False, delimiter='\n', un
 
 
 def dump_ips(*ips, verbose=False, range=False, unrange=False, cidr=False, shorter=False):
-    ips = parse_ips(contents='\n'.join(ips))
+    ips = parse_ips(ips)
 
     if range:
         ips = get_ranged_ips(ips=ips, verbose=verbose)
@@ -66,7 +66,7 @@ def dump_ips(*ips, verbose=False, range=False, unrange=False, cidr=False, shorte
 
 
 def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n', unrange=False, step=1):
-    ports = parse_ports(contents='\n'.join(ports))
+    ports = parse_ports(ports)
 
     if range:
         ports = get_ranged_ports(ports=ports, verbose=verbose, step=step)
