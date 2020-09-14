@@ -84,12 +84,17 @@ def dumps_ports(*ports, max_len=None, verbose=False, range=False, delimiter='\n'
     return delimiter.join([port for port in ports])
 
 
-def dump_ports(ports, max_len=None, verbose=False, range=False):
-    ports = sorted(ports)
+def dump_ports(*ports, max_len=None, verbose=False, range=False, unrange=False, step=1):
+    ports = parse_ports(ports)
 
-    # TODO: verify ports contains at least one port
     if range:
-        ports = get_ranged_ports(ports=ports, verbose=verbose)
+        ports = get_ranged_ports(ports=ports, verbose=verbose, step=step)
+    elif unrange:
+        ports = get_unranged_ports(ports=ports, verbose=verbose)
+    else:
+        ports = sorted(ports, key=lambda port: (
+            int(port.split('-')[0] if '-' in port else port),
+            int(port.split('-')[1] if '-' in port else port)))
 
     if max_len is not None:
         separated_ports = separate_list(from_list=ports, max_len=max_len)
