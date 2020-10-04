@@ -8,7 +8,7 @@ from netrange.load import loads_ips
 from netrange.load import loads_ports
 from netrange import exceptions
 
-__version__ = '0.0.17'
+__version__ = '0.0.18'
 __description__ = 'A simple package for reading and ranging IPs and ports.'
 __all__ = [
     '__version__',
