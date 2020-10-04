@@ -1,8 +1,5 @@
 import re
-
-from ipaddress import IPv4Address
 from ipaddress import ip_network
-
 from netrange.exceptions import NetrangeParserError
 
 
@@ -54,7 +51,7 @@ def parse_ips(contents):
     contents_str = _convert_contents_to_str(contents)
     # return a list of tuples with string type
     ips = re.findall(pattern=full_ips_regex, string=contents_str)
-    valid_ips = _validate_ips(ips)
+    valid_ips = _validate_ips(ips=ips)
     return valid_ips
 
 
@@ -91,36 +88,39 @@ def _unrange_ports(ports):
 
 
 def _validate_ips(ips):
-    if not ips:
-        raise NetrangeParserError('No IP found.')
-
+    _list = list()
     for ip in ips:
         for part in ip[3].split(';'):
             if '-' in part:
                 left, right = part.split('-')
                 if int(left) < int(right):
-                    yield ip
+                    _list.append(ip)
             elif '/' in part:
                 try:
-                    network = ip_network(address='.'.join(ip))
-                    yield ip
-                except Exception as e:
+                    ip_network(address='.'.join(ip))
+                    _list.append(ip)
+                # the network has host bits set
+                except ValueError:
                     pass
             else:
-                yield ip
+                _list.append(ip)
+    if not _list:
+        raise NetrangeParserError('No IP found.')
+    return iter(_list)
 
 
 def _validate_ports(ports):
-    if not ports:
-        raise NetrangeParserError('No port found.')
-
+    _list = list()
     for port in ports:
         if '-' in port:
             left, right = port.split('-')
             if int(left) < int(right):
-                yield port
+                _list.append(port)
         else:
-            yield port
+            _list.append(port)
+    if not _list:
+        raise NetrangeParserError('No port found.')
+    return iter(_list)
 
 
 def _unrange_ips(ips):
@@ -157,96 +157,64 @@ def _range_ips(ips):
         yield first_ip[:3] + (first_ip[3] + '-' + last_ip[3],)
 
 
-# TODO: check if max_len is less than range length
-def separate_list(from_list, max_len):
-    list = []
-    for range in from_list:
-        if (_len_list(list) + len(range) + len(list)) <= max_len:
-            list.append('.'.join(range))
-        else:
-            yield list
-            list = ['.'.join(range)]
-    yield list
-
-
-# TODO: check if max_len is less than range length
-def separate_ports(from_list, max_len):
-    list = []
-    for range in from_list:
-        if (_len_list(list) + len(range) + len(list)) <= max_len:
-            list.append(range)
-        else:
-            yield list
-            list = [range]
-    yield list
-
-
-def _len_list(list):
-    max = 0
-    for i in list:
-        max += len(i)
-
-    return max
-
-
-def get_unranged_ports(ports, verbose=False):
+def get_unranged_ports(ports):
     unranged_ports = _unrange_ports(ports)
     sorted_ports = sorted(set(unranged_ports), key=int)
     return sorted_ports
 
 
-def get_ranged_ports(ports, verbose=False, step=1):
+def get_ranged_ports(ports, step=1):
     unranged_ports = _unrange_ports(ports)
     sorted_ports = sorted(set(unranged_ports), key=int)
     for ranged_ports in _range_ports(ports=sorted_ports, step=step):
         yield ranged_ports
 
 
-def get_unranged_ipadds(ipaddrs, verbose=False):
-    unranged_ipaddrs = _unrange_ips(ipaddrs)
-    sorted_ipaddrs = sorted(set(unranged_ipaddrs), key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
-    return sorted_ipaddrs
-
-
-def get_ranged_ips(ips, verbose=False):
+def get_unranged_ips(ips):
     unranged_ips = _unrange_ips(ips)
     sorted_ips = sorted(set(unranged_ips), key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
-    for grouped_ips in _group_ipaddrs_by_octet(ipaddrs=sorted_ips, octet=3):
+    return sorted_ips
+
+
+def get_ranged_ips(ips):
+    unranged_ips = _unrange_ips(ips)
+    sorted_ips = sorted(set(unranged_ips), key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2]), int(ip[3])))
+    for grouped_ips in _group_ips_by_octet(ips=sorted_ips, octet=3):
         for ranged_ips in _range_ips(ips=grouped_ips):
             yield ranged_ips
 
 
-def get_cidr_block(ipaddrs):
-    groups = _group_ipaddrs_by_octet_slow(ipaddrs).keys()
+def get_cidr_block(ips):
+    groups = _group_ips_by_octet_slow(ips).keys()
     sorted_groups = sorted(groups, key=lambda ip: (int(ip[0]), int(ip[1]), int(ip[2])))
     for group in sorted_groups:
         yield group + ('0/24',)
 
 
-def _group_ipaddrs_by_octet_slow(ipaddrs, octet=3):
+def _group_ips_by_octet_slow(ips, octet=3):
     groups = {}
-    for ipaddr in ipaddrs:
-        if ipaddr[:octet] not in groups:
-            groups[ipaddr[:octet]] = []
-        groups[ipaddr[:octet]].append(ipaddr[3])
+    for ip in ips:
+        if ip[:octet] not in groups:
+            groups[ip[:octet]] = []
+        groups[ip[:octet]].append(ip[3])
 
     return groups
 
 
-def _group_ipaddrs_by_octet(ipaddrs, octet=3):
-    group = [ipaddrs[0]]
-    for ipaddr in ipaddrs[1:]:
-        if ipaddr[:octet] == group[-1][:octet]:
-            group.append(ipaddr)
+def _group_ips_by_octet(ips, octet=3):
+    group = [ips[0]]
+    for ip in ips[1:]:
+        if ip[:octet] == group[-1][:octet]:
+            group.append(ip)
         else:
             yield group
-            group = [ipaddr]
+            group = [ip]
     yield group
 
 
-def shorten(ipaddrs):
-    for group, ipaddrs in _group_ipaddrs_by_octet_slow(ipaddrs).items():
-        yield group + (';'.join(ipaddrs),)
+def shorten(ips):
+    for group, ips in _group_ips_by_octet_slow(ips).items():
+        yield group + (';'.join(ips),)
 
 
 def _convert_contents_to_str(contents):
