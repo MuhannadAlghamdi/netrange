@@ -10,10 +10,10 @@ ports_list = ['0', '20', '21', '22', '23', '25', '53', '80']
 
 
 def test_dump_ips():
-    ips = netrange.dump_ips(*ips_list, range=True)
+    ips = netrange.dump_ips(*ips_list, _range=True)
     assert ips == ['172.25.12.195-197', '172.25.12.199']
 
 
 def test_dumps_ips():
-    ips = netrange.dumps_ips(*ips_list, range=True, delimiter=',')
+    ips = netrange.dumps_ips(*ips_list, _range=True, delimiter=',')
     assert ips == '172.25.12.195-197,172.25.12.199'

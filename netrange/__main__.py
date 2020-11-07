@@ -10,14 +10,14 @@ def main():
         print(output)
         exit(0)
     except NetrangeException as e:
-        message = '{}: {}'.format(e.__class__.__name__, e.args[0])
+        message = '{}: {}'.format(e.__class__.__name__, str(e))
         print(message)
         sys.exit(2)
     except Exception as e:
-        message = '{}: {}'.format(e.__class__.__name__, e.args[0])
+        message = '{}: {}'.format(e.__class__.__name__, str(e))
         print(message)
         sys.exit(2)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

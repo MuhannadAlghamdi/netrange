@@ -1,5 +1,3 @@
-import json
-
 import netrange
 
 from os import path
@@ -23,23 +21,11 @@ ports_list = ['0',
               '25,33-']
 
 
-def test_loads_ips():
-    ips = netrange.loads_ips(*ips_list)
-    print(ips)
-    assert len(ips) == 2
-
-
 def test_load_ips_from_file():
     file_name = f'{this_directory}/ips'
     file = open(file=file_name, mode='r')
     ips = netrange.load_ips_from_file(file=file)
     assert len(ips) == 256
-
-
-def test_loads_ports():
-    ports = netrange.loads_ports(*ports_list)
-    print(ports)
-    assert len(ports) == 2
 
 
 def test_load_ports_from_file():

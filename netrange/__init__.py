@@ -4,8 +4,6 @@ from netrange.dump import dump_ports
 from netrange.dump import dumps_ports
 from netrange.load import load_ips_from_file
 from netrange.load import load_ports_from_file
-from netrange.load import loads_ips
-from netrange.load import loads_ports
 from netrange import exceptions
 
 __version__ = '0.0.18'
@@ -19,7 +17,5 @@ __all__ = [
     'dumps_ports',
     'load_ips_from_file',
     'load_ports_from_file',
-    'loads_ips',
-    'loads_ports',
     'exceptions'
 ]
